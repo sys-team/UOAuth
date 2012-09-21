@@ -39,3 +39,31 @@ create table ua.authProvider(
 ;
 comment on table ua.authProvider is 'Провайдер OAuth'
 ;
+
+create table ua.account(
+
+    name varchar(1024) not null unique,
+    email varchar(128) not null unique,
+    
+    providerData xml,
+    providerRefreshToken varchar(1024),
+    
+    uRefreshToken varchar(1024),
+    uRefrechTokenTs datetime,
+    uRefrechTokenExpiresIn integer,
+    
+    foreign key(authProvider) references ua.authProvider,
+        
+    id integer default autoincrement,
+    cts datetime default current timestamp,
+    ts datetime default timestamp,
+    
+    xid uniqueidentifier default newid(),
+    
+    unique (xid),
+    primary key (id)
+    
+)
+;
+comment on table ua.account is 'Пользователь'
+;
