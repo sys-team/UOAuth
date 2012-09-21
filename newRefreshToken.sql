@@ -8,8 +8,8 @@ begin
 
     update ua.account
        set uRefreshToken = @token,
-           uRefrechTokenTs = now(),
-           uRefrechTokenExpiresIn = @expiresIn
+           uRefreshTokenTs = now(),
+           uRefreshTokenExpiresIn = @expiresIn
      where id = @accountId;
 
     select @token as refreshToken, @expiresIn as expiresIn;

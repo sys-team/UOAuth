@@ -49,8 +49,8 @@ create table ua.account(
     providerRefreshToken varchar(1024),
     
     uRefreshToken varchar(1024),
-    uRefrechTokenTs datetime,
-    uRefrechTokenExpiresIn integer,
+    uRefreshTokenTs datetime,
+    uRefreshTokenExpiresIn integer,
     
     foreign key(authProvider) references ua.authProvider,
         
@@ -66,4 +66,64 @@ create table ua.account(
 )
 ;
 comment on table ua.account is 'Пользователь'
+;
+
+create table ua.accessToken(
+
+    data long varchar not null,
+    expiresIn integer not null,
+
+    foreign key(account) references ua.account,
+        
+    id integer default autoincrement,
+    cts datetime default current timestamp,
+    ts datetime default timestamp,
+    
+    xid uniqueidentifier default newid(),
+    
+    unique (xid),
+    primary key (id)
+    
+)
+;
+comment on table ua.accessToken is 'accessToken'
+;
+
+create table ua.role(
+    
+    name varchar(1024) not null,
+    code varchar(128) not null unique,
+
+    id integer default autoincrement,
+    cts datetime default current timestamp,
+    ts datetime default timestamp,
+    
+    xid uniqueidentifier default newid(),
+    
+    unique (xid),
+    primary key (id)
+    
+)
+;
+comment on table ua.role is 'Роль'
+;
+
+
+create table ua.accountRole(
+    
+    not null foreign key(account) references ua.account,
+    not null foreign key(role) references ua.role,
+    
+    id integer default autoincrement,
+    cts datetime default current timestamp,
+    ts datetime default timestamp,
+    
+    xid uniqueidentifier default newid(),
+    
+    unique (xid),
+    primary key (id)
+    
+)
+;
+comment on table ua.role is 'Роль пользователя'
 ;

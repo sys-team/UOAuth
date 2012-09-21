@@ -15,8 +15,8 @@ begin
     
     if @url = 'auth' then
         set @response = ua.auth(@request);
-    elseif @url = 'token' then
-        set @response = ua.token(@request);
+    elseif @url = 'access' then
+        set @response = ua.access(@request);
     end if;
     
     set @response = '<?xml version="1.0" encoding="utf-8"?>'
