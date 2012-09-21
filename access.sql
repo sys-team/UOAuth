@@ -26,9 +26,7 @@ begin
       from ua.newAccessToken(@accountId);
       
     set @response = xmlelement('access-token', xmlattributes(@expiresIn as "expire-after"), @accessToken)
-                  + (select xmlelement('roles', xmlconcat(xmlagg(xmlelement('role',r.code)),xmlelement('role','authenticated')))
-                       from ua.accountRole ar join ua.role r on ar.role = r.id
-                      where ar.account = @accountId);
+                  + ua.accountRoles(@accountId);
                         
     return @response;
 

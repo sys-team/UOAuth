@@ -17,6 +17,8 @@ begin
         set @response = ua.auth(@request);
     elseif @url = 'access' then
         set @response = ua.access(@request);
+    elseif @url = 'roles' then
+        set @response = ua.roles();
     end if;
     
     set @response = '<?xml version="1.0" encoding="utf-8"?>'
