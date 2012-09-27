@@ -2,12 +2,12 @@ grant connect to ua;
 grant resource, dba to ua;
 grant group to ua;
 
+create table ua.client(
 
-create table ua.clientSecret(
+    name varchar(256) not null,
+    code varchar(128) not null,
+    secret varchar(128) not null,
 
-    clientId varchar(1024) not null unique,
-    clientSecret varchar(1024) not null,
-    
     id integer default autoincrement,
     cts datetime default current timestamp,
     ts datetime default timestamp,
@@ -18,15 +18,19 @@ create table ua.clientSecret(
     primary key (id)
 )
 ;
-comment on table ua.clientSecret is 'Ид клиента и секрет клиента'
+comment on table ua.client is 'Клиент (наша программа)'
 ;
 
 create table ua.authProvider(
 
+    name varchar(256) not null,
     code varchar(128) not null unique,
     refreshTokenUrl long varchar,
     accessTokenUrl long varchar,
-        
+    
+    clientId varchar(1024) not null unique,
+    clientSecret varchar(1024) not null,
+
     id integer default autoincrement,
     cts datetime default current timestamp,
     ts datetime default timestamp,
@@ -37,7 +41,7 @@ create table ua.authProvider(
     primary key (id)
 )
 ;
-comment on table ua.authProvider is 'Провайдер OAuth'
+comment on table ua.authProvider is 'Внешний провайдер OAuth'
 ;
 
 create table ua.account(
@@ -45,15 +49,6 @@ create table ua.account(
     name varchar(1024) not null unique,
     email varchar(128) not null unique,
     
-    providerData xml,
-    providerRefreshToken varchar(1024),
-    
-    uRefreshToken varchar(1024),
-    uRefreshTokenTs datetime,
-    uRefreshTokenExpiresIn integer,
-    
-    foreign key(authProvider) references ua.authProvider,
-        
     id integer default autoincrement,
     cts datetime default current timestamp,
     ts datetime default timestamp,
@@ -68,12 +63,42 @@ create table ua.account(
 comment on table ua.account is 'Пользователь'
 ;
 
+create table ua.accountProviderData(
+
+    account integer,
+    authProvider integer,
+
+    not null foreign key (account) references ua.account,
+    not null foreign key (authProvider) references ua.authProvider,   
+    
+    providerData xml,
+    providerRefreshToken varchar(1024),
+    
+    uRefreshToken varchar(1024),
+    uRefreshTokenTs datetime,
+    uRefreshTokenExpiresIn integer,
+ 
+    id integer default autoincrement,
+    cts datetime default current timestamp,
+    ts datetime default timestamp,
+    
+    xid uniqueidentifier default newid(),
+    
+    unique (xid),
+    unique (account, authProvider),
+    primary key (id)
+ 
+)   
+;
+comment on table ua.account is 'Данные авторизации пользователя у внешнего провайдера'
+;
+
 create table ua.accessToken(
 
     data long varchar not null,
     expiresIn integer not null,
 
-    foreign key(account) references ua.account,
+    foreign key(accountProviderData) references ua.accountProviderData,
         
     id integer default autoincrement,
     cts datetime default current timestamp,
