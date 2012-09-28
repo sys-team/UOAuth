@@ -1,83 +1,127 @@
-create or replace function ua.auth(@request long varchar)
+--/auth : первичная регистрация по auth_code из внешнего сервиса
+--(в ответ выпускаем наши access_token и refresh_token и выдаем code, для их получения)
+--
+--параметры:
+--client_id - наш id для нашего сервиса
+--redirect_uri - uri сервиса-инициатора, способный обработать ответ
+--access_type = {offline} (опционально)
+--auth_type = {external} (опционально)
+--e_service={google, facebook, vk} (опционально, только при auth-type = external)
+--e_code = внешний auth_code (опционально, только при auth-type = external)
+--тип запроса - GET или POST
+--
+--ответ - 302 переход на redirect_uri с параметром code = {наш auth_code}
+--обработка ошибок - переход на redirect_uri с параметром error={описание ошибки} (например access_denied)
+
+create or replace function ua.auth()
 returns xml
 begin
     declare @response xml;
-    declare @service varchar(128);
-    declare @authCode varchar(1024);
+    
+    declare @eService varchar(128);
+    declare @eAuthCode varchar(1024);
+    
+    declare @redirectUri long varchar;
+    
+    declare @refreshTokenUrl long varchar;
+    declare @accessTokenUrl long varchar;
+    declare @providerResponse long varchar;
+    declare @providerResponseXml xml;
+    
+    declare @providerClientId varchar(1024);
+    declare @providerClientSecret varchar(1024);
+    
     declare @refreshToken varchar(1024);
     declare @accessToken varchar(1024);
     declare @audience varchar(1024);
     
     declare @xid uniqueidentifier;
     
-    declare @clientId varchar(1024);
-    declare @clientSecret varchar(1024);
-    declare @refreshTokenUrl long varchar;
-    declare @accessTokenUrl long varchar;
-    declare @providerResponse long varchar;
-    declare @providerResponseXml xml;
-    
+    declare @clientCode varchar(256);
+    declare @clientId integer;
+
     declare @accountId integer;
-    declare @uRefreshToken varchar(1024);
-    declare @uRefreshTokenExpiresIn integer;
+
+    declare @uAuthCode varchar(256);
+    -------
     
-    set @service = http_variable('e-service');
-    set @authCode = http_variable ('e-auth-code');
-    set @refreshToken = http_variable('e-refresh-token');
+    set @eService = http_variable('e_service');
+    set @eAuthCode = http_variable('e_code');
+    set @redirectUri = http_variable('redirect_uri');
+    set @clientCode = http_variable('client_id');
     
-    --message 'ua.auth @service = ', @service,' @authCode = ', @authCode,' @refreshToken = ', @refreshToken;
+    --message 'ua.auth @eService = ', @eService,' @eAuthCode = ', @eAuthCode,' @clientCode = ', @clientCode;
     
-    if @service not in (select code from ua.authProvider) then
-        set @response = xmlelement('error','Unknown Auth Provider');
+    if @eService not in (select code from ua.authProvider) then        
+        
+        call sa_set_http_header ('@HTTPSTATUS', '302');
+        call sa_set_http_header ('Location', @redirectUri +'?error=Unknown e_service');
+
+        set @response = xmlelement('error','Unknown e_service');
+        
         return @response;
     end if;
         
-    if @authCode is null and @refreshToken is null then
-        set @response = xmlelement('error','e-auth-code or e-refresh-token required');
+    if @eAuthCode is null then
+        call sa_set_http_header ('@HTTPSTATUS', '302');
+        call sa_set_http_header ('Location', @redirectUri +'?error=e_code required');
+        
+        set @response = xmlelement('error','e_code required');
+        return @response;
+    end if;
+    
+    set @clientId = (select id
+                       from ua.client
+                      where code = @clientCode);
+                       
+    if @clientId is null then
+        call sa_set_http_header ('@HTTPSTATUS', '302');
+        call sa_set_http_header ('Location', @redirectUri +'?error=Unknown client_id');
+        
+        set @response = xmlelement('error','Unknown client_id');
+        return @response;
     end if;
         
     select refreshTokenUrl,
            accessTokenUrl
       into @refreshTokenUrl, @accessTokenUrl
       from ua.authProvider
-     where code = @service;
-     
-    select top 1
-           clientId,
-           clientSecret
-      into @clientId, @clientSecret
-     from ua.clientSecret;
-    
+     where code = @eService;
+
     begin
         declare http_status_err exception for sqlstate 'WW052';
         
-        case @service
+        select clientId,
+               clientSecret
+          into @providerClientId, @providerClientSecret
+         from ua.authProvider
+        where code = @eService;
+
+        case @eService
             when 'google' then
-                -- get access token
-                if @authCode is not null then
-                    set @xid = newid();
-                    
-                    insert into ua.googleLog with auto name
-                    select @xid as xid,
-                           @refreshTokenUrl as url,
-                           'code='+@authCode+'&client_id='+@clientId+'&client_secret='+@clientSecret as request;
-                        
-                    set @providerResponse = google.processAuthCode(@refreshTokenUrl, @authCode, @clientId, @clientSecret);
-                    
-                    update ua.googleLog
-                       set response = @providerResponse
-                     where xid = @xid;  
-                    
-                    set @providerResponseXml = ua.json2xml(@providerResponse);
-                    
-                    select refreshToken,
-                           accessToken
-                      into @refreshToken, @accessToken  
-                      from openxml(@providerResponseXml ,'/*:response')
-                           with (refreshToken varchar(1024) '*:refresh_token', accessToken varchar(1024) '*:access_token');
-                           
-                end if;
                 
+                -- get access token
+                set @xid = newid();
+                
+                insert into ua.googleLog with auto name
+                select @xid as xid,
+                       @refreshTokenUrl as url,
+                       'code='+@eAuthCode+'&client_id='+@providerClientId+'&client_secret='+@providerClientSecret as request;
+                    
+                set @providerResponse = google.processAuthCode(@refreshTokenUrl, @eAuthCode, @providerClientId, @providerClientSecret);
+                
+                update ua.googleLog
+                   set response = @providerResponse
+                 where xid = @xid;  
+                
+                set @providerResponseXml = ua.json2xml(@providerResponse);
+                
+                select refreshToken,
+                       accessToken
+                  into @refreshToken, @accessToken  
+                  from openxml(@providerResponseXml ,'/*:response')
+                       with (refreshToken varchar(1024) '*:refresh_token', accessToken varchar(1024) '*:access_token');
+                       
                 -- check application
                 set @xid = newid();
                 
@@ -98,8 +142,11 @@ begin
                   from openxml(@providerResponseXml ,'/*:response')
                        with (audience varchar(1024) '*:audience');
 
-                if @audience <> @clientId then
-                    set @response = xmlelement('error','Application mismatch');
+                if @audience <> @providerClientId then
+                    call sa_set_http_header ('@HTTPSTATUS', '302');
+                    call sa_set_http_header ('Location', @redirectUri +'?error=Provider application mismatch');
+                    
+                    set @response = xmlelement('error','Provider application mismatch');
                     return @response;
                 end if;
 
@@ -120,20 +167,27 @@ begin
                 
                 set @providerResponseXml = csconvert(@providerResponseXml,'char_charset','utf-8');
                 
-                set @accountId = ua.registerAccount(@service, @refreshToken, @providerResponseXml);
-                select refreshToken,
-                       expiresIn
-                  into @uRefreshToken, @uRefreshTokenExpiresIn
-                  from ua.newRefreshToken(@accountId);
-                 
-                set @response =  xmlelement('refresh-token',xmlattributes(@uRefreshTokenExpiresIn as "expire-after"),@uRefreshToken);
+ 
         
         end case;
         
+        set @accountId = ua.registerAccount(@eService, @clientCode, @refreshToken, @providerResponseXml);
+        set @uAuthCode = ua.newAuthCode(@accountId, @clientCode);
+    
+        call sa_set_http_header ('@HTTPSTATUS', '302');
+        call sa_set_http_header ('Location', @redirectUri +'?code=' + @uAuthCode);
+         
+        set @response =  xmlelement('auth-code',@uAuthCode);
+        
     exception
         when http_status_err then
-            set @response = xmlelement('error',errormsg());
-            
+        
+            set @response = errormsg();
+            call sa_set_http_header ('@HTTPSTATUS', '302');
+            call sa_set_http_header ('Location', @redirectUri +'?error='+@response);
+           
+            set @response = xmlelement('error',@response);
+            return @response;
         when others then
             resignal;
     end;

@@ -74,10 +74,6 @@ create table ua.accountProviderData(
     providerData xml,
     providerRefreshToken varchar(1024),
     
-    uRefreshToken varchar(1024),
-    uRefreshTokenTs datetime,
-    uRefreshTokenExpiresIn integer,
- 
     id integer default autoincrement,
     cts datetime default current timestamp,
     ts datetime default timestamp,
@@ -93,13 +89,26 @@ create table ua.accountProviderData(
 comment on table ua.account is 'Данные авторизации пользователя у внешнего провайдера'
 ;
 
-create table ua.accessToken(
+create table ua.accountClientData (
+    
+    account integer,
+    client integer,
+    
+    not null foreign key (account) references ua.account,
+    not null foreign key (client) references ua.client,
+    
+    authCode varchar(256),
+    authCodeTs datetime,
+    authCodeExpiresIn integer,
+    
+    refreshToken varchar(256),
+    refreshTokenTs datetime,
+    refreshTokenExpiresIn integer,
 
-    data long varchar not null,
-    expiresIn integer not null,
-
-    foreign key(accountProviderData) references ua.accountProviderData,
-        
+    accessToken varchar(256),
+    accessTokenTs datetime,
+    accessTokenExpiresIn integer,
+    
     id integer default autoincrement,
     cts datetime default current timestamp,
     ts datetime default timestamp,
@@ -107,12 +116,14 @@ create table ua.accessToken(
     xid uniqueidentifier default newid(),
     
     unique (xid),
+    unique (account, client),
     primary key (id)
     
 )
 ;
-comment on table ua.accessToken is 'accessToken'
+comment on table ua.account is 'Данные авторизации пользователя для нашего клиента'
 ;
+
 
 create table ua.role(
     

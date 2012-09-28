@@ -14,9 +14,9 @@ begin
            @request as request;
     
     if @url = 'auth' then
-        set @response = ua.auth(@request);
-    elseif @url = 'access' then
-        set @response = ua.access(@request);
+        set @response = ua.auth();
+    elseif @url = 'token' then
+        set @response = ua.token();
     elseif @url = 'roles' then
         set @response = ua.roles();
     end if;
