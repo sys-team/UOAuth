@@ -37,7 +37,7 @@ begin
                        where (acd.refreshToken = @refreshToken
                          and datediff(ss, acd.refreshTokenTs, now()) < acd.refreshTokenExpiresIn
                           or acd.authCode = @authCode
-                         and datediff(ss, acd.authCodeTs, now()) < acd.rauthCodeExpiresIn)
+                         and datediff(ss, acd.authCodeTs, now()) < acd.authCodeExpiresIn)
                          and c.code = @clientCode
                          and c.secret = @clientSecret);
                          

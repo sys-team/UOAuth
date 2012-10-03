@@ -21,8 +21,6 @@ begin
     declare @eService varchar(128);
     declare @eAuthCode varchar(1024);
     
-    declare @redirectUri long varchar;
-    
     declare @refreshTokenUrl long varchar;
     declare @accessTokenUrl long varchar;
     declare @providerResponse long varchar;
@@ -47,24 +45,17 @@ begin
     
     set @eService = http_variable('e_service');
     set @eAuthCode = http_variable('e_code');
-    set @redirectUri = http_variable('redirect_uri');
     set @clientCode = http_variable('client_id');
     
     --message 'ua.auth @eService = ', @eService,' @eAuthCode = ', @eAuthCode,' @clientCode = ', @clientCode;
     
     if @eService not in (select code from ua.authProvider) then        
-        
-        call sa_set_http_header ('@HTTPSTATUS', '302');
-        call sa_set_http_header ('Location', @redirectUri +'?error=Unknown e_service');
-
         set @response = xmlelement('error','Unknown e_service');
         
         return @response;
     end if;
         
     if @eAuthCode is null then
-        call sa_set_http_header ('@HTTPSTATUS', '302');
-        call sa_set_http_header ('Location', @redirectUri +'?error=e_code required');
         
         set @response = xmlelement('error','e_code required');
         return @response;
@@ -75,8 +66,6 @@ begin
                       where code = @clientCode);
                        
     if @clientId is null then
-        call sa_set_http_header ('@HTTPSTATUS', '302');
-        call sa_set_http_header ('Location', @redirectUri +'?error=Unknown client_id');
         
         set @response = xmlelement('error','Unknown client_id');
         return @response;
@@ -143,8 +132,6 @@ begin
                        with (audience varchar(1024) '*:audience');
 
                 if @audience <> @providerClientId then
-                    call sa_set_http_header ('@HTTPSTATUS', '302');
-                    call sa_set_http_header ('Location', @redirectUri +'?error=Provider application mismatch');
                     
                     set @response = xmlelement('error','Provider application mismatch');
                     return @response;
@@ -173,9 +160,6 @@ begin
         
         set @accountId = ua.registerAccount(@eService, @clientCode, @refreshToken, @providerResponseXml);
         set @uAuthCode = ua.newAuthCode(@accountId, @clientCode);
-    
-        call sa_set_http_header ('@HTTPSTATUS', '302');
-        call sa_set_http_header ('Location', @redirectUri +'?code=' + @uAuthCode);
          
         set @response =  xmlelement('auth-code',@uAuthCode);
         
@@ -183,9 +167,6 @@ begin
         when http_status_err then
         
             set @response = errormsg();
-            call sa_set_http_header ('@HTTPSTATUS', '302');
-            call sa_set_http_header ('Location', @redirectUri +'?error='+@response);
-           
             set @response = xmlelement('error',@response);
             return @response;
         when others then

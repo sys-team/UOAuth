@@ -28,6 +28,9 @@ begin
        set response = @response
      where xid = @xid;
     
+    call sa_set_http_header ( 'Content-Type', 'text/xml; charset=utf-8' );
+    call sa_set_http_option ( 'CharsetConversion', 'off');
+    
     return @response;
     
 end
