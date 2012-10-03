@@ -48,19 +48,26 @@
         print 'terminal';
     }
     else {
-        $urlA = array();
+        $urlPathParts= array();
         $u = $_SERVER[SCRIPT_NAME];
         $u = substr($u, strpos($u,'/handler/'));
 
-        foreach (explode('/', $u) as $url) 
-            $urlA['url'.(++$i?$i:'0')] = $url;
-            
-        $service = $urlA['url3'];
+        foreach (explode('/', $u) as $urlPart) 
+            array_push ($urlPathParts, $urlPart);
+    
+        if (count($urlPathParts) < 5) {
+            print 'Wrong URL';
+            return;
+        }
+        
+        //var_dump($urlPathParts);
+        
+        $service = $urlPathParts[2];
             
         if ($service == 'auth') {
             
-            $parms['e_service'] = $urlA['url4'];
-            $parms['client_id'] = $urlA['url5'];
+            $parms['e_service'] = $urlPathParts[3];
+            $parms['client_id'] = $urlPathParts[4];
             $parms['e_code'] = $_REQUEST['code'];
             
         } elseif ($service == 'token') {
