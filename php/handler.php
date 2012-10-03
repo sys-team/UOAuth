@@ -64,13 +64,14 @@
         
         $service = $urlPathParts[2];
             
-        if ($service == 'auth') {
+         switch ($service) {
+            case 'auth':
             
-            $parms['e_service'] = $urlPathParts[3];
-            $parms['client_id'] = $urlPathParts[4];
-            $parms['e_code'] = $_REQUEST['code'];
-            
-        } elseif ($service == 'token') {
+                $parms['e_service'] = $urlPathParts[3];
+                $parms['client_id'] = $urlPathParts[4];
+                $parms['e_code'] = $_REQUEST['code'];
+                
+            case 'token':
             
         }
     }
@@ -80,14 +81,15 @@
     $asaResponseArray = asaReadResponse($asaResponse);
     //var_dump($asaResponseArray);
     
-    if ($service == 'auth') {
+    switch ($service) {
+        case 'auth':
         $redirectUrl = $asaResponseArray['redirect-url'].($asaResponseArray['auth-code']
                                                           ?'?code='.$asaResponseArray['auth-code']
                                                           :'?error='.$asaResponseArray['error']);
         header('Location: '.$redirectUrl, true, 302);
         return;
-    } elseif ($service == 'token') {
         
+        case 'token':
     }
     
     
