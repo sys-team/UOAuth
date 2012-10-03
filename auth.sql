@@ -17,6 +17,7 @@ create or replace function ua.auth()
 returns xml
 begin
     declare @response xml;
+    declare @error long varchar;
     
     declare @eService varchar(128);
     declare @eAuthCode varchar(1024);
@@ -37,6 +38,7 @@ begin
     
     declare @clientCode varchar(256);
     declare @clientId integer;
+    declare @redirectUrl long varchar;
 
     declare @accountId integer;
 
@@ -61,16 +63,20 @@ begin
         return @response;
     end if;
     
-    set @clientId = (select id
-                       from ua.client
-                      where code = @clientCode);
-                       
+    select id,
+           redirectUrl
+      into @clientId, @redirectUrl
+      from ua.client
+     where code = @clientCode;
+    
     if @clientId is null then
         
         set @response = xmlelement('error','Unknown client_id');
         return @response;
     end if;
         
+    set @response = xmlelement('redirect-url', @redirectUrl);
+    
     select refreshTokenUrl,
            accessTokenUrl
       into @refreshTokenUrl, @accessTokenUrl
@@ -133,7 +139,7 @@ begin
 
                 if @audience <> @providerClientId then
                     
-                    set @response = xmlelement('error','Provider application mismatch');
+                    set @response = xmlconcat(xmlelement('error','Provider application mismatch'), @response);
                     return @response;
                 end if;
 
@@ -161,13 +167,13 @@ begin
         set @accountId = ua.registerAccount(@eService, @clientCode, @refreshToken, @providerResponseXml);
         set @uAuthCode = ua.newAuthCode(@accountId, @clientCode);
          
-        set @response =  xmlelement('auth-code',@uAuthCode);
+        set @response =  xmlconcat(xmlelement('auth-code', @uAuthCode), @response);
         
     exception
         when http_status_err then
         
-            set @response = errormsg();
-            set @response = xmlelement('error',@response);
+            set @error = errormsg();
+            set @response = xmlconcat(xmlelement('error',@error), @response);
             return @response;
         when others then
             resignal;

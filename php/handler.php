@@ -20,14 +20,21 @@
     
         $ret = curl_exec($ch);
         
-        var_dump($ret);
         curl_close($ch);
         
         return $ret;
         
     }
     ///////////////////////
-    function asaReadAnswer($answer) {
+    function asaReadResponse($response) {
+        
+        $xml = new DOMDocument();
+        $ret = array();
+        
+        $xml -> loadXML($response);
+        
+        foreach ($xml -> documentElement -> childNodes as $currentNode)
+            if ($currentNode -> nodeType == XML_ELEMENT_NODE) $ret[$currentNode -> nodeName] = $currentNode -> nodeValue;
         
         return $ret;
     }
@@ -61,7 +68,20 @@
         }
     }
     
-    asaPost ($service, $parms);
+    $asaResponse = asaPost ($service, $parms);
+    
+    $asaResponseArray = asaReadResponse($asaResponse);
+    //var_dump($asaResponseArray);
+    
+    if ($service == 'auth') {
+        $redirectUrl = $asaResponseArray['redirect-url'].($asaResponseArray['auth-code']
+                                                          ?'?code='.$asaResponseArray['auth-code']
+                                                          :'?error='.$asaResponseArray['error']);
+        header('Location: '.$redirectUrl, true, 302);
+        return;
+    } elseif ($service == 'token') {
+        
+    }
     
     
 ?>

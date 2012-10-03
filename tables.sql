@@ -7,6 +7,8 @@ create table ua.client(
     name varchar(256) not null,
     code varchar(128) not null,
     secret varchar(128) not null,
+    
+    redirectUrl long varchar,
 
     id integer default autoincrement,
     cts datetime default current timestamp,
