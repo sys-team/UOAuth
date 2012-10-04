@@ -84,10 +84,16 @@
                 print 'Wrong client_id';
                 return;
             }
-            $redirectUrl = $asaResponseArray['redirect-url'].($asaResponseArray['auth-code']
+            
+            if ($asaResponseArray['redirect-url'] != ''){
+                $redirectUrl = $asaResponseArray['redirect-url'].($asaResponseArray['auth-code']
                                                               ?'?code='.$asaResponseArray['auth-code']
                                                               :'?error='.$asaResponseArray['error']);
-            header('Location: '.$redirectUrl, true, 302);
+                header('Location: '.$redirectUrl, true, 302);
+            }
+            else{
+                echo ('Empty redirect URL');
+            }
             return;
         
         case 'token':

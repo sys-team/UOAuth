@@ -11,7 +11,8 @@ begin
     insert into ua.log with auto name
     select @xid as xid,
            @url as url,
-           @request as request;
+           @request as request,
+           connection_property('ClientNodeAddress') as clientIp;
     
     if @url = 'auth' then
         set @response = ua.auth();

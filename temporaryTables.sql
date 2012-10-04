@@ -1,5 +1,6 @@
 create global temporary table if not exists ua.log(
     url long varchar,
+    clientIp varchar(64),
     request long varchar,
     response xml,
 

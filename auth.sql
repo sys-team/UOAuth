@@ -117,6 +117,8 @@ begin
                 
                 set @providerResponseXml = ua.json2xml(@providerResponse);
                 
+                --message 'ua.auth @providerResponseXml = ', @providerResponseXml;
+                
                 select refreshToken,
                        accessToken
                   into @refreshToken, @accessToken  
@@ -174,13 +176,12 @@ begin
         set @response =  xmlconcat(xmlelement('auth-code', @uAuthCode), @response);
         
     exception
-        when http_status_err then
+        when others then
         
             set @error = errormsg();
             set @response = xmlconcat(xmlelement('error',@error), @response);
             return @response;
-        when others then
-            resignal;
+
     end;
     
 
