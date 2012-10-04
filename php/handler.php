@@ -60,8 +60,6 @@
             return;
         }
         
-        //var_dump($urlPathParts);
-        
         $service = $urlPathParts[2];
             
          switch ($service) {
@@ -76,18 +74,21 @@
         }
     }
     
-    $asaResponse = asaPost ($service, $parms);
+    $asaResponse = asaPost($service, $parms);
     
     $asaResponseArray = asaReadResponse($asaResponse);
-    //var_dump($asaResponseArray);
-    
+
     switch ($service) {
         case 'auth':
-        $redirectUrl = $asaResponseArray['redirect-url'].($asaResponseArray['auth-code']
-                                                          ?'?code='.$asaResponseArray['auth-code']
-                                                          :'?error='.$asaResponseArray['error']);
-        header('Location: '.$redirectUrl, true, 302);
-        return;
+            if(!$parms['client_id']) {
+                print 'Wrong client_id';
+                return;
+            }
+            $redirectUrl = $asaResponseArray['redirect-url'].($asaResponseArray['auth-code']
+                                                              ?'?code='.$asaResponseArray['auth-code']
+                                                              :'?error='.$asaResponseArray['error']);
+            header('Location: '.$redirectUrl, true, 302);
+            return;
         
         case 'token':
     }

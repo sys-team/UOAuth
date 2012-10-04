@@ -29,6 +29,7 @@ begin
     
     declare @providerClientId varchar(1024);
     declare @providerClientSecret varchar(1024);
+    declare @providerRedirectUrl long varchar;
     
     declare @refreshToken varchar(1024);
     declare @accessToken varchar(1024);
@@ -86,14 +87,15 @@ begin
     begin
         declare http_status_err exception for sqlstate 'WW052';
         
-        select clientId,
-               clientSecret
-          into @providerClientId, @providerClientSecret
-         from ua.authProvider
+        select ap.clientId,
+               ap.clientSecret,
+               caprd.redirectUrl
+          into @providerClientId, @providerClientSecret, @providerRedirectUrl
+         from ua.authProvider ap left outer join ua.clientAuthProviderRegData caprd on ap.id = caprd.authProvider
         where code = @eService;
 
-        case @eService
-            when 'google' then
+        case 
+            when @eService in ('google','googlei') then
                 
                 -- get access token
                 set @xid = newid();
@@ -101,9 +103,13 @@ begin
                 insert into ua.googleLog with auto name
                 select @xid as xid,
                        @refreshTokenUrl as url,
-                       'code='+@eAuthCode+'&client_id='+@providerClientId+'&client_secret='+@providerClientSecret as request;
-                    
-                set @providerResponse = google.processAuthCode(@refreshTokenUrl, @eAuthCode, @providerClientId, @providerClientSecret);
+                       'code='+@eAuthCode+'&client_id='+@providerClientId+'&client_secret='+@providerClientSecret
+                        +'&grant_type=authorization_code'+'&redirect-uri='+isnull(@providerRedirectUrl,'urn:ietf:wg:oauth:2.0:oob') as request;
+                
+                
+                set @providerResponse = google.processAuthCode(@refreshTokenUrl, @eAuthCode, @providerClientId, @providerClientSecret,
+                                                               isnull(@providerRedirectUrl,'urn:ietf:wg:oauth:2.0:oob'));
+
                 
                 update ua.googleLog
                    set response = @providerResponse
@@ -160,8 +166,6 @@ begin
                 
                 set @providerResponseXml = csconvert(@providerResponseXml,'char_charset','utf-8');
                 
- 
-        
         end case;
         
         set @accountId = ua.registerAccount(@eService, @clientCode, @refreshToken, @providerResponseXml);

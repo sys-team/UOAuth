@@ -33,5 +33,16 @@ begin
     
     return @response;
     
+    -- Пока во всех случаях 404 вернём
+    exception  
+        when others then 
+            call op.errorHandler('ua.UOAuth',SQLSTATE,errormsg()); 
+            commit;
+
+            call dbo.sa_set_http_header('@HttpStatus', '404');
+
+            return '';
+            
+    
 end
 ;

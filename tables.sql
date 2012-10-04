@@ -46,6 +46,32 @@ create table ua.authProvider(
 comment on table ua.authProvider is 'Внешний провайдер OAuth'
 ;
 
+create table ua.clientAuthProviderRegData(
+
+    authProvider integer,
+    client integer,
+
+    not null foreign key (authProvider) references ua.authProvider,
+    not null foreign key (client) references ua.client,
+    
+    redirectUrl long varchar,
+
+    id integer default autoincrement,
+    cts datetime default current timestamp,
+    ts datetime default timestamp,
+    
+    xid uniqueidentifier default newid(),
+    
+    unique (authProvider, client),
+    unique (xid),
+    primary key (id)
+)
+;
+comment on table ua.clientAuthProviderRegData is 'Дополнительные данные клиента для провайдера OAuth'
+;
+
+
+
 create table ua.account(
 
     name varchar(1024) not null unique,
