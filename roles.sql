@@ -5,7 +5,7 @@ begin
     declare @accessToken varchar(1024);
     declare @accountId integer;
     
-    set @accessToken = isnull(http_variable('access-token'),'');
+    set @accessToken = isnull(http_variable('access_token'),'');
     
     set @accountId = ua.checkAccessToken(@accessToken);
     

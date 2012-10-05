@@ -23,7 +23,8 @@ begin
     declare @clientCode varchar(256);
     declare @clientSecret varchar(256);
     
-    declare @accountId integer;    
+    declare @accountId integer;
+    declare @accountClientDataId integer; 
     declare @accessToken varchar(1024);
     declare @accessTokenExpiresIn integer;
     -------
@@ -32,16 +33,18 @@ begin
     set @clientCode = http_variable('client_id');
     set @clientSecret = http_variable('client_secret');
     
-    set @accountId = (select id
-                        from ua.accountClientData acd join ua.client c on acd.client = c.id
-                       where (acd.refreshToken = @refreshToken
-                         and datediff(ss, acd.refreshTokenTs, now()) < acd.refreshTokenExpiresIn
-                          or acd.authCode = @authCode
-                         and datediff(ss, acd.authCodeTs, now()) < acd.authCodeExpiresIn)
-                         and c.code = @clientCode
-                         and c.secret = @clientSecret);
+    select c.id,
+           acd.id
+      into @accountId, @accountClientDataId
+      from ua.accountClientData acd join ua.client c on acd.client = c.id
+     where (acd.refreshToken = isnull(@refreshToken,'')
+       and datediff(ss, acd.refreshTokenTs, now()) < acd.refreshTokenExpiresIn
+        or acd.authCode = isnull(@authCode,'')
+       and datediff(ss, acd.authCodeTs, now()) < acd.authCodeExpiresIn)
+       and c.code = @clientCode
+       and c.secret = @clientSecret;
                          
-    if @accountId is null then
+    if @accountId is null or @accountClientDataId is null then
         set @response = xmlelement('error','Not authorized');
         return @response;
     end if;
@@ -50,13 +53,13 @@ begin
         select refreshToken, 
                expiresIn
           into @refreshToken, @refreshTokenExpiresIn
-          from ua.newRefreshToken(@accountId , @clientCode);
+          from ua.newRefreshToken(@accountClientDataId);
     end if;
     
     select accessToken, 
            expiresIn
       into @accessToken, @accessTokenExpiresIn
-      from ua.newAccessToken(@accountId , @clientCode);    
+      from ua.newAccessToken(@accountClientDataId);    
 
     set @response = xmlelement('access-token', xmlattributes(@accessTokenExpiresIn as "expire-after"), @accessToken)
                   + if @refreshTokenExpiresIn is not null then xmlelement('refresh-token', @refreshToken) else '' endif

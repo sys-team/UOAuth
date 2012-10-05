@@ -1,16 +1,15 @@
-create or replace function ua.newAuthCode(@accountId integer, @clientCode varchar(256))
+create or replace function ua.newAuthCode(@accountClientDataId integer)
 returns varchar(256)
 begin
     declare @result varchar(255);
     
     set @result = uuidtostr(newid());
     
-    update ua.accountClientData
+   update ua.accountClientData
        set authCode = @result,
            authCodeTs = now(),
            authCodeExpiresIn = 600
-     where account =  @accountId
-       and client = (select id from ua.client where code = @clientCode);
+     where id = @accountClientDataId;
        
     return @result;
 

@@ -1,4 +1,4 @@
-create or replace procedure ua.newAccessToken(@accountId integer, @clientCode varchar(256))
+create or replace procedure ua.newAccessToken(@accountClientDataId integer)
 begin
     declare @token varchar(256);
     declare @expiresIn integer;
@@ -10,10 +10,9 @@ begin
        set accessToken = @token,
            accessTokenTs = now(),
            accessTokenExpiresIn = @expiresIn
-     where account = @accountId
-       and client = (select id from client where code = @clientCode);
-
-
+     where id = @accountClientDataId;
+        
     select @token as accessToken, @expiresIn as expiresIn;
+    
 end
 ;

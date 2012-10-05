@@ -4,9 +4,9 @@ begin
     declare @result integer;
     
     set @result = (select account
-                    from ua.accessToken
-                   where data = @accessToken
-                     and datediff(ss, cts, now()) < expiresIn);
+                    from ua.accountClientData
+                   where accessToken = @accessToken
+                     and datediff(ss, accessTokenTs, now()) < accessTokenExpiresIn);
     
     return @result;
 end

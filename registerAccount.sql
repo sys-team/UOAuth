@@ -1,7 +1,7 @@
 create or replace function ua.registerAccount(
-    @authProviderCode varchar(64),
-    @clientCode varchar(256),
-    @refreshToken varchar(1024),
+    @authProviderCode long varchar,
+    @clientCode long varchar,
+    @refreshToken long varchar,
     @providerData xml
 )
 returns integer
@@ -58,21 +58,17 @@ begin
     set @clientId = (select id
                        from ua.client
                       where code = @clientCode);
- 
-    set @accountClientDataId = (select id
-                                  from ua.accountClientData
-                                 where client = @clientId
-                                   and account = @accountId);
                                    
-    insert into ua.accountClientData on existing update with auto name
-    select @accountClientDataId as id,
-           @clientId as client,
+    insert into ua.accountClientData  with auto name
+    select @clientId as client,
            @accountId as account,
            null as authCode,
            null as refreshToken,
            null as accessToken;
+           
+    set @accountClientDataId = @@identity;       
 
-    return @accountId;
+    return @accountClientDataId;
 
 end
 ;

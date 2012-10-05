@@ -144,7 +144,6 @@ create table ua.accountClientData (
     xid uniqueidentifier default newid(),
     
     unique (xid),
-    unique (account, client),
     primary key (id)
     
 )

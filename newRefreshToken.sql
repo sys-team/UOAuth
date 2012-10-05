@@ -1,4 +1,4 @@
-create or replace procedure ua.newRefreshToken(@accountId integer, @clientCode varchar(256))
+create or replace procedure ua.newRefreshToken(@accountClientDataId integer)
 begin
     declare @token varchar(1024);
     declare @expiresIn integer;
@@ -10,8 +10,7 @@ begin
        set refreshToken = @token,
            refreshTokenTs = now(),
            refreshTokenExpiresIn = @expiresIn
-     where account = @accountId
-       and client = (select id from client where code = @clientCode);
+     where id = @accountClientDataId;
 
     select @token as refreshToken, @expiresIn as expiresIn;
     

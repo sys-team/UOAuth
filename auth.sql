@@ -42,6 +42,8 @@ begin
     declare @redirectUrl long varchar;
 
     declare @accountId integer;
+    declare @accountClientDataId integer;
+
 
     declare @uAuthCode varchar(256);
     -------
@@ -170,8 +172,8 @@ begin
                 
         end case;
         
-        set @accountId = ua.registerAccount(@eService, @clientCode, @refreshToken, @providerResponseXml);
-        set @uAuthCode = ua.newAuthCode(@accountId, @clientCode);
+        set @accountClientDataId = ua.registerAccount(@eService, @clientCode, @refreshToken, @providerResponseXml);
+        set @uAuthCode = ua.newAuthCode(@accountClientDataId);
          
         set @response =  xmlconcat(xmlelement('auth-code', @uAuthCode), @response);
         
