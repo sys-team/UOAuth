@@ -14,7 +14,10 @@ begin
         return @response;
     end if;
     
-    set @response = ua.accountRoles(@accountId);
+    set @response = xmlconcat(
+        ua.accountRoles(@accountId),
+        ua.accountData (@accountId)
+    );
     
     return @response;
 
