@@ -88,10 +88,10 @@
             if ($asaResponseArray['redirect-url'] != ''){
                 $redirectUrl = $asaResponseArray['redirect-url'].'?'
                     . ($asaResponseArray['auth-code']
-                        ?'?code='.$asaResponseArray['auth-code']
+                        ?'code='.$asaResponseArray['auth-code']
                         : ($asaResponseArray['access-token']
-                            ?'?access_token='.$asaResponseArray['access-token']
-                            :'?error='.$asaResponseArray['error']
+                            ?'access_token='.$asaResponseArray['access-token']
+                            :'error='.$asaResponseArray['error']
                         )
                     )
                 ;

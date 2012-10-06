@@ -43,7 +43,7 @@ begin
 
     declare @accountId integer;
     declare @accountClientDataId integer;
-
+    declare @needsRefreshToken BOOL;
 
     declare @uAuthCode varchar(256);
     -------
@@ -175,12 +175,10 @@ begin
         
         set @accountClientDataId = ua.registerAccount(@eService, @clientCode, @refreshToken, @providerResponseXml);
         
-        set @uAuthCode = if (@needsRefreshToken = '1')
-            then ua.newAuthCode(@accountClientDataId);
-            else ua.newAccessToken(@accountClientDataId);
-        endif;
-        
-        set @response =  xmlconcat(xmlelement('auth-code', @uAuthCode), @response);
+        set @response =  xmlconcat( if (@needsRefreshToken = '1')
+            then xmlelement('auth-code', ua.newAuthCode(@accountClientDataId))
+            else (select xmlelement('access-token', accessToken) from ua.newAccessToken(@accountClientDataId))
+        endif, @response);
         
     exception
         when others then
