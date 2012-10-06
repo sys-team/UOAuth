@@ -4,7 +4,7 @@ begin
     declare @expiresIn integer;
     
     set @token = uuidtostr(newid());
-    set @expiresIn = 3600;
+    set @expiresIn = 36000;
     
     update ua.accountClientData
        set accessToken = @token,

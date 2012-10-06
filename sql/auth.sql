@@ -66,14 +66,15 @@ begin
         return @response;
     end if;
     
-    select id,
-           redirectUrl
-      into @clientId, @redirectUrl
-      from ua.client
-     where code = @clientCode;
+    select
+        id,
+        redirectUrl,
+        needsRefreshToken
+    into @clientId, @redirectUrl, @needsRefreshToken
+    from ua.client
+    where code = @clientCode;
     
     if @clientId is null then
-        
         set @response = xmlelement('error','Unknown client_id');
         return @response;
     end if;
@@ -173,8 +174,12 @@ begin
         end case;
         
         set @accountClientDataId = ua.registerAccount(@eService, @clientCode, @refreshToken, @providerResponseXml);
-        set @uAuthCode = ua.newAuthCode(@accountClientDataId);
-         
+        
+        set @uAuthCode = if (@needsRefreshToken = '1')
+            then ua.newAuthCode(@accountClientDataId);
+            else ua.newAccessToken(@accountClientDataId);
+        endif;
+        
         set @response =  xmlconcat(xmlelement('auth-code', @uAuthCode), @response);
         
     exception

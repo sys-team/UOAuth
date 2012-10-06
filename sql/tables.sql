@@ -8,6 +8,8 @@ create table ua.client(
     code varchar(128) not null,
     secret varchar(128) not null,
     
+    needsRefreshToken BOOL,
+    
     redirectUrl long varchar,
 
     id integer default autoincrement,
