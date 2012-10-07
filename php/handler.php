@@ -86,7 +86,8 @@
             }
             
             if ($asaResponseArray['redirect-url'] != ''){
-                $redirectUrl = $asaResponseArray['redirect-url'].'?'
+                $redirectUrl = $asaResponseArray['redirect-url']
+                    . (strpos($asaResponseArray['redirect-url'],'?')==false ? '?' : '&')
                     . ($asaResponseArray['auth-code']
                         ?'code='.$asaResponseArray['auth-code']
                         : ($asaResponseArray['access-token']
