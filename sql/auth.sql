@@ -44,6 +44,8 @@ begin
     declare @accountId integer;
     declare @accountClientDataId integer;
     declare @needsRefreshToken BOOL;
+    
+    declare @url long varchar;
 
     declare @uAuthCode varchar(256);
     -------
@@ -171,6 +173,57 @@ begin
                 
                 set @providerResponseXml = csconvert(@providerResponseXml,'char_charset','utf-8');
                 
+            when @eService = 'facebook' then
+            
+                set @url = @refreshTokenUrl + '?client_id=' + @providerClientId
+                                            + '&client_secret=' + @providerClientSecret
+                                            + '&redirect_uri=' + @providerRedirectUrl
+                                            + '&code=' +  @eAuthCode;
+                                            
+                set @xid = newid();
+                
+                insert into ua.fbLog with auto name
+                select @xid as xid,
+                       @url as url;
+            
+                -- acesss_token
+                set @providerResponse = fb.get(@url);
+                                               
+                update ua.fbLog
+                   set response = @providerResponse
+                 where xid = @xid;
+                 
+                set @accessToken = (select top 1
+                                           varValue
+                                      from openstring(value @providerResponse)
+                                           with(varName long varchar, varValue long varchar)
+                                           option (delimited by '=' row delimited by '&') as t
+                                     where varName = 'access_token');
+                                     
+                if @accessToken is null then
+                    set @response = xmlconcat(xmlelement('error','Authorization error'), @response);
+                    return @response;
+                end if;
+                
+                set @url = @accessTokenUrl + '?access_token=' + @accessToken +'&fields=name,email';
+                
+                set @xid = newid();
+                
+                insert into ua.fbLog with auto name
+                select @xid as xid,
+                       @url as url;
+            
+                -- user data
+                set @providerResponse = fb.get(@url);
+                                               
+                update ua.fbLog
+                   set response = @providerResponse
+                 where xid = @xid;
+                 
+                set @providerResponseXml = ua.json2xml(@providerResponse);
+                
+                message 'fbdata = ', @providerResponseXml;
+                
         end case;
         
         set @accountClientDataId = ua.registerAccount(@eService, @clientCode, @refreshToken, @providerResponseXml);
@@ -179,6 +232,7 @@ begin
             then xmlelement('auth-code', ua.newAuthCode(@accountClientDataId))
             else (select xmlelement('access-token', accessToken) from ua.newAccessToken(@accountClientDataId))
         endif, @response);
+    
         
     exception
         when others then

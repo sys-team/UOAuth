@@ -11,13 +11,22 @@ begin
     declare @authProviderId integer;
     declare @accountProviderDataId integer;
     declare @accountClientDataId integer;
-    declare @email varchar(1024);
+    declare @email long varchar;
+    declare @name long varchar;
     
-    case @authProviderCode
-        when 'google' then
+    case 
+        when @authProviderCode in ('google','googlei') then
             set @email = (select email
                             from openxml(@providerData ,'/*:response')
                                  with(email varchar(1024) '*:email'));
+                                 
+        when @authProviderCode = 'facebook' then
+        
+            select name,
+                   email
+              into @name, @email
+              from openxml(@providerData ,'/*:response')
+                    with(name long varchar '*:name', email long varchar '*:email');
         
     end case;
     
@@ -27,7 +36,7 @@ begin
                     
     insert into ua.account on existing update with auto name
     select @accountId as id,
-           @email as name,
+           isnull(@name,@email) as name,
            @email as email;
            
     set @accountId = (select id
