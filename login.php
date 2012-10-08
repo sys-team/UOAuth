@@ -34,8 +34,6 @@
             }
         </style>
         
-        <script src="bootstrap/js/bootstrap.min.js"></script>
-        
     </head>
     
     <body>
@@ -73,11 +71,13 @@
                                 <img src="img/vk-logo.png" class="img-rounded button-image">
                             </a>
                         </li>
-                        <li class="span3"><small>>ЮНЭКТ Группа компаний</small></li>
+                        <li class="span3"><small>ЮНЭКТ Группа компаний</small></li>
                     </ul>
                 </div>
             </div>    
         </div>
+        
+        <script src="bootstrap/js/bootstrap.min.js"></script>
         
     </body>
     
