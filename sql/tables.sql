@@ -111,7 +111,8 @@ create table ua.accountProviderData(
     xid uniqueidentifier default newid(),
     
     unique (xid),
-    unique (account, authProvider),
+    //? unique (account, authProvider),
+    // drop unique ?
     primary key (id)
  
 )   
