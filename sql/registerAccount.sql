@@ -22,26 +22,30 @@ begin
                                  
         when @authProviderCode = 'facebook' then
         
-            select name,
-                   email
+            select top 1
+                   name,
+                   isnull(email, username + '@facebook.com')
               into @name, @email
               from openxml(@providerData ,'/*:response')
-                    with(name long varchar '*:name', email long varchar '*:email');
+                    with(name long varchar '*:name', email long varchar '*:email', username long varchar '*:username');
         
     end case;
     
     set @accountId = (select id
                         from ua.account
                        where email = @email);
-                    
-    insert into ua.account on existing update with auto name
-    select @accountId as id,
-           isnull(@name,@email) as name,
-           @email as email;
-           
-    set @accountId = (select id
-                        from ua.account
-                       where email = @email);
+    
+    if @accountId is null then
+    
+        insert into ua.account on existing update with auto name
+        select @accountId as id,
+               isnull(@name,@email) as name,
+               @email as email;
+               
+        set @accountId = (select id
+                            from ua.account
+                           where email = @email);
+    end if;
                        
     set @authProviderId = (select id
                              from ua.authProvider

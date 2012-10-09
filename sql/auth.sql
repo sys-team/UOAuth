@@ -205,7 +205,10 @@ begin
                     return @response;
                 end if;
                 
-                set @url = @accessTokenUrl + '?access_token=' + @accessToken +'&fields=name,email';
+                
+                --'@mp:xmltext'
+                -- user data            
+                set @url = @accessTokenUrl + '?access_token=' + @accessToken;
                 
                 set @xid = newid();
                 
@@ -213,7 +216,6 @@ begin
                 select @xid as xid,
                        @url as url;
             
-                -- user data
                 set @providerResponse = fb.get(@url);
                                                
                 update ua.fbLog
@@ -221,8 +223,10 @@ begin
                  where xid = @xid;
                  
                 set @providerResponseXml = ua.json2xml(@providerResponse);
-                
+                                                           
                 message 'fbdata = ', @providerResponseXml;
+                
+            when @eService = 'vk' then
                 
         end case;
         
