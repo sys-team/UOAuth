@@ -43,11 +43,38 @@
             $client_id = $_REQUEST["client_id"];
             
             if	($client_id == ""){
-            echo "<div class='alert alert-error'>
+                echo "<div class='alert alert-error'>
                         <strong>Error!</strong> No client ID provided
                     </div>";
-            die();
+                die();
             }
+            
+            
+            $googleServiceName = "google";
+            $googleClientID = "1043543321098-pp8ltrn0oqnrattumr2ukmc57svpp555.apps.googleusercontent.com";
+            
+            $facebookServiceName = "facebook";
+            $facebookClientID = "280478078728915";
+            
+            $vkServiceName = "vk";
+            $vkClientID = "3141555";
+            
+            $mailruServiceName = "mailru";
+            $mailruClientID = "689363";
+
+            $googleRedirectURL = $u_auth_server_url . "/". $googleServiceName ."/" . $client_id;
+            $facebookRedirectURL = $u_auth_server_url . "/". $facebookServiceName ."/" . $client_id;
+            $vkRedirectURL = $u_auth_server_url . "/". $vkServiceName ."/" . $client_id;
+            $mailruRedirectURL = $u_auth_server_url . "/". $mailruServiceName ."/" . $client_id;
+            
+            $googleAuthURL = "https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/userinfo.email+https://www.googleapis.com/auth/userinfo.profile&response_type=code&client_id=" . $googleClientID . "&redirect_uri=" . $googleRedirectURL;
+            
+            $facebookAuthURL = "https://www.facebook.com/dialog/oauth?client_id=" . $facebookClientID . "&redirect_uri=" . $facebookRedirectURL;
+            
+            $vkAuthURL = "http://oauth.vk.com/authorize?scope=status&response_type=code&client_id=" . $vkClientID . "&redirect_uri=" . $vkRedirectURL;
+            
+            $mailruAuthURL = "https://connect.mail.ru/oauth/authorize?response_type=code&client_id=" . $mailruClientID . "&redirect_uri=" . $mailruRedirectURL;
+            
         ?>
         
         <div class = "container">
@@ -57,24 +84,29 @@
                     <ul class="thumbnails">
                         <li class="span3"><p class="lead">Войти&nbsp;с&nbsp;помощью</p></li>
                         <li class="span3">
-                            <a class="thumbnail" href="https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/userinfo.email+https://www.googleapis.com/auth/userinfo.profile&redirect_uri=<?php echo $u_auth_server_url;?>/google/<?php echo $client_id;?>&response_type=code&client_id=1043543321098-pp8ltrn0oqnrattumr2ukmc57svpp555.apps.googleusercontent.com">
+                            <a class="thumbnail" href="<?php echo $googleAuthURL;?>">
                                 <img src="img/google-logo.png" class="img-rounded button-image">
                             </a>
                         </li>
                         <li class="span3">
-                            <a class="thumbnail" href="https://www.facebook.com/dialog/oauth?client_id=280478078728915&redirect_uri=<?php echo $u_auth_server_url;?>/facebook/<?php echo $client_id;?>">
+                            <a class="thumbnail" href="<?php echo $facebookAuthURL;?>">
                                 <img src="img/facebook-logo.png" class="img-rounded button-image">
                             </a>
                         </li>
                         <li class = "span3">
-                            <a class="thumbnail" href="http://oauth.vk.com/authorize?client_id=3141555&scope=status&redirect_uri=<?php echo $u_auth_server_url;?>/vk/<?php echo $client_id;?>&response_type=code">
+                            <a class="thumbnail" href="<?php echo $vkAuthURL;?>">
                                 <img src="img/vk-logo.png" class="img-rounded button-image">
+                            </a>
+                        </li>
+                        <li class = "span3">
+                            <a class="thumbnail" href="<?php echo $mailruAuthURL;?>">
+                                <img src="img/mailru-logo.png" class="img-rounded button-image">
                             </a>
                         </li>
                         <li class="span3"><small>ЮНЭКТ Группа компаний</small></li>
                     </ul>
                 </div>
-            </div>    
+            </div>
         </div>
         
         <script src="bootstrap/js/bootstrap.min.js"></script>
