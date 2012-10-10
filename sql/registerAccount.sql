@@ -13,12 +13,15 @@ begin
     declare @accountClientDataId integer;
     declare @email long varchar;
     declare @name long varchar;
+    declare @code long varchar;
     
     case 
         when @authProviderCode in ('google','googlei') then
-            set @email = (select email
-                            from openxml(@providerData ,'/*:response')
-                                 with(email varchar(1024) '*:email'));
+            select email,
+                   name
+              into @name, @email
+              from openxml(@providerData ,'/*:response')
+                  with(email long varchar '*:email', name long varchar '*:name');
                                  
         when @authProviderCode = 'facebook' then
         
@@ -37,10 +40,13 @@ begin
     
     if @accountId is null then
     
+        set @code = @email;
+    
         insert into ua.account on existing update with auto name
         select @accountId as id,
                isnull(@name,@email) as name,
-               @email as email;
+               @email as email,
+               @code as code;
                
         set @accountId = (select id
                             from ua.account

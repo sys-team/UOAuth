@@ -79,6 +79,8 @@ create table ua.account(
     name varchar(1024) not null unique,
     email varchar(128) not null unique,
     
+    code varchar(256),
+    
     id integer default autoincrement,
     cts datetime default current timestamp,
     ts datetime default timestamp,
