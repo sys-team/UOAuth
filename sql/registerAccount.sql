@@ -2,7 +2,8 @@ create or replace function ua.registerAccount(
     @authProviderCode long varchar,
     @clientCode long varchar,
     @refreshToken long varchar,
-    @providerData xml
+    @providerData xml,
+    @providerUid long varchar default null
 )
 returns integer
 begin
@@ -19,7 +20,7 @@ begin
         when @authProviderCode in ('google','googlei') then
             select email,
                    name
-              into @name, @email
+              into @email, @name
               from openxml(@providerData ,'/*:response')
                   with(email long varchar '*:email', name long varchar '*:name');
                                  
@@ -31,6 +32,15 @@ begin
               into @name, @email
               from openxml(@providerData ,'/*:response')
                     with(name long varchar '*:name', email long varchar '*:email', username long varchar '*:username');
+                    
+        when @authProviderCode = 'vk' then
+        
+            select first_name +' '+ last_name,
+                   uid+'@vk.com'
+              into @name, @email
+              from openxml(@providerData, '/*:response/*:user')
+                   with(first_name long varchar '*:first_name', last_name long varchar '*:last_name', uid long varchar '*:uid')
+                          
         
     end case;
     
@@ -67,7 +77,8 @@ begin
            @accountId as account,
            @authProviderId as authProvider,
            @providerData as providerData,
-           @refreshToken as providerRefreshToken;
+           @refreshToken as providerRefreshToken,
+           @providerUid as providerUid;
            
     set @accountProviderDataId = (select id
                                     from ua.accountProviderData

@@ -36,3 +36,15 @@ create global temporary table if not exists ua.fbLog(
     primary key (xid)
 )  not transactional share by all
 ;
+
+create global temporary table if not exists ua.vkLog(
+    url long varchar,
+    response long varchar,
+
+    cts datetime default current timestamp,
+    
+    xid uniqueidentifier,
+    ts datetime default timestamp,
+    primary key (xid)
+)  not transactional share by all
+;

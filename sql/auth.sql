@@ -26,6 +26,7 @@ begin
     declare @accessTokenUrl long varchar;
     declare @providerResponse long varchar;
     declare @providerResponseXml xml;
+    declare @providerUid long varchar;
     
     declare @providerClientId varchar(1024);
     declare @providerClientSecret varchar(1024);
@@ -169,7 +170,7 @@ begin
                    set response = @providerResponse
                  where xid = @xid;
                  
-                set @providerResponseXml = ua.json2xml(csconvert(@providerResponse,'utf-8','windows-1251'));
+                --set @providerResponseXml = ua.json2xml(csconvert(@providerResponse,'utf-8','windows-1251'));
                 
                 set @providerResponseXml = csconvert(@providerResponseXml,'char_charset','utf-8');
                 
@@ -223,14 +224,52 @@ begin
                  where xid = @xid;
                  
                 set @providerResponseXml = ua.json2xml(@providerResponse);
-                                                           
-                message 'fbdata = ', @providerResponseXml;
+                -- message 'fbdata = ', @providerResponseXml;
                 
             when @eService = 'vk' then
+            
+                -- access token
+                set @url = @refreshTokenUrl + '?client_id=' + @providerClientId
+                            + '&client_secret=' + @providerClientSecret
+                            + '&code=' +  @eAuthCode
+                            + '&redirect_uri=' + @providerRedirectUrl;
+                                            
+                set @xid = newid();
                 
+                insert into ua.vkLog with auto name
+                select @xid as xid,
+                       @url as url;
+            
+                -- acesss_token
+                set @providerResponse = vk.processAuthCode(@refreshTokenUrl,@eAuthCode, @providerClientId, @providerClientSecret, @providerRedirectUrl);
+                                               
+                update ua.vkLog
+                   set response = @providerResponse
+                 where xid = @xid;
+                 
+                set @providerResponseXml = ua.json2xml(@providerResponse);
+                
+                select access_token,
+                       user_id
+                  into @accessToken, @providerUid
+                  from openxml(@providerResponseXml, '/*:response')
+                       with(access_token long varchar '*:access_token', user_id long varchar '*:user_id');
+                       
+                -- user data
+                
+                set @url = @accessTokenUrl +'?uids=' + @providerUid+'&access_token='+ @accessToken +'&fields=uid,first_name,last_name,contacts';
+
+                set @providerResponseXml = vk.get(@url);
+                 
+                --message 'vkdata = ', @providerResponseXml;
+                 
         end case;
         
-        set @accountClientDataId = ua.registerAccount(@eService, @clientCode, @refreshToken, @providerResponseXml);
+        set @accountClientDataId = ua.registerAccount(@eService,
+                                                      @clientCode,
+                                                      @refreshToken,
+                                                      @providerResponseXml,
+                                                      @providerUid);
         
         set @response =  xmlconcat( if (@needsRefreshToken = '1')
             then xmlelement('auth-code', ua.newAuthCode(@accountClientDataId))
@@ -240,8 +279,9 @@ begin
         
     exception
         when others then
-        
             set @error = errormsg();
+            message 'ua.auth error = ', @error;
+        
             set @response = xmlconcat(xmlelement('error',@error), @response);
             return @response;
 

@@ -76,7 +76,7 @@ comment on table ua.clientAuthProviderRegData is 'Дополнительные �
 
 create table ua.account(
 
-    name varchar(1024) not null unique,
+    name varchar(1024) not null,
     email varchar(128) not null unique,
     
     code varchar(256),
@@ -105,6 +105,7 @@ create table ua.accountProviderData(
     
     providerData xml,
     providerRefreshToken varchar(1024),
+    providerUid varchar(256),
     
     id integer default autoincrement,
     cts datetime default current timestamp,
