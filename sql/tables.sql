@@ -100,7 +100,7 @@ create table ua.accountProviderData(
     account integer,
     authProvider integer,
 
-    not null foreign key (account) references ua.account,
+    not null foreign key (account) references ua.account on delete cascade,
     not null foreign key (authProvider) references ua.authProvider,   
     
     providerData xml,
@@ -128,7 +128,7 @@ create table ua.accountClientData (
     account integer,
     client integer,
     
-    not null foreign key (account) references ua.account,
+    not null foreign key (account) references ua.account on delete cascade,
     not null foreign key (client) references ua.client,
     
     authCode varchar(256),

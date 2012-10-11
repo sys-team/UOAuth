@@ -97,8 +97,9 @@ begin
                ap.clientSecret,
                caprd.redirectUrl
           into @providerClientId, @providerClientSecret, @providerRedirectUrl
-         from ua.authProvider ap left outer join ua.clientAuthProviderRegData caprd on ap.id = caprd.authProvider
-        where code = @eService;
+          from ua.authProvider ap left outer join ua.clientAuthProviderRegData caprd on ap.id = caprd.authProvider
+         where ap.code = @eService
+           and caprd.client = @clientId;
 
         case 
             when @eService in ('google','googlei') then
@@ -171,7 +172,7 @@ begin
                  where xid = @xid;
                  
                 --set @providerResponseXml = ua.json2xml(csconvert(@providerResponse,'utf-8','windows-1251'));
-                
+                set @providerResponseXml = ua.json2xml(@providerResponse);
                 set @providerResponseXml = csconvert(@providerResponseXml,'char_charset','utf-8');
                 
             when @eService = 'facebook' then
@@ -262,7 +263,15 @@ begin
                 set @providerResponseXml = vk.get(@url);
                  
                 --message 'vkdata = ', @providerResponseXml;
-                 
+                
+            when @eService = 'mailru' then
+            
+                select refreshToken,
+                       providerResponseXml,
+                       providerUid
+                  into @refreshToken, @providerResponseXml, @providerUid
+                  from ua.authMailru(@eService, @eAuthCode, @clientCode);
+            
         end case;
         
         set @accountClientDataId = ua.registerAccount(@eService,

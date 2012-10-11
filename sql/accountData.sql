@@ -6,7 +6,7 @@ create or replace function ua.accountData (
     
     set @result = ( select
             xmlelement('account', xmlforest(
-                    name, email, id
+                    name, email, id, code
                 )
             )
         from ua.account
