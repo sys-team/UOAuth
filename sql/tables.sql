@@ -183,6 +183,8 @@ create table ua.accountRole(
     not null foreign key(account) references ua.account,
     not null foreign key(role) references ua.role,
     
+    data STRING,
+    
     id integer default autoincrement,
     cts datetime default current timestamp,
     ts datetime default timestamp,
