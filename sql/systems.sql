@@ -86,9 +86,9 @@ create table if not exists ua.[responsibility] (
 
 create table if not exists ua.[designation] (
 
-    foreign key (account) references ua.[account] on delete cascade,
+    foreign key (accountRole) references ua.[accountRole] on delete cascade,
     foreign key (responsible) references ua.[responsibility] on delete cascade,
-    foreign key (for) references ua.[value] on delete cascade,
+    foreign key ([for]) references ua.[value] on delete cascade,
     
     id ID, xid GUID, ts TS, cts CTS,
     unique (xid), primary key (id)

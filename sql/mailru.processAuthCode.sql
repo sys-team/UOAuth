@@ -1,5 +1,6 @@
 create or replace function mailru.processAuthCode(
     url long varchar,
+    _address long varchar,
     client_id long varchar,
     client_secret long varchar,
     grant_type long varchar,
@@ -8,6 +9,6 @@ create or replace function mailru.processAuthCode(
 )
 returns long varchar
 url '!url'
-type 'HTTP:POST:application/x-www-form-urlencoded'
-certificate 'file="c:\asafiles\mail.ru.crt"'
+type 'HTTP:POST'
+certificate 'file="c:\asafiles\system.unact.ru.crt"'
 ;

@@ -7,9 +7,11 @@ begin
     declare @xid uniqueidentifier;
 
     declare @refreshToken long varchar;
+    declare @accessToken long varchar;
     declare @providerResponse long varchar;
     declare @providerResponseXml long varchar;
     declare @providerUid long varchar;
+    declare @providerError long varchar;
     
     declare @providerClientId long varchar;
     declare @providerClientSecret long varchar;
@@ -49,14 +51,15 @@ begin
            + '&code=' + @eAuthCode
            + '&redirect_uri=' + @providerRedirectUrl ;
            
-    message '@tmp = ', @tmp;
+    -- message '@tmp = ', @tmp;
     
     insert into ua.mailruLog with auto name
     select @xid as xid,
            @refreshTokenUrl as url,
            @tmp as request;
            
-    set @providerResponse =  mailru.processAuthCode(@refreshTokenUrl,
+    set @providerResponse =  mailru.processAuthCode('https://system.unact.ru/utils/proxy.php',
+                                                    @refreshTokenUrl,
                                                     @providerClientId,
                                                     @providerClientSecret,
                                                     'authorization_code',
@@ -65,10 +68,22 @@ begin
                                                     
                                                     
     update ua.mailruLog
-       set respomse = @providerResponse
+       set response = @providerResponse
      where xid = @xid;
      
-    message 'mailru reponse = ', @providerResponse; 
+    set @providerResponseXml = ua.json2xml(@providerResponse);
+    -- message 'mailru reponse = ', @providerResponseXml;
+    
+    select refreshToken,
+           accessToken,
+           uid,
+           error
+      into 
+      from openxml(@providerResponseXml,'/*:response')
+            with(refreshToken long varchar '*:refresh_token',
+                 accessToken long varchar '*:access_token',
+                 uid long varchar '*:x_mailru_vid');
+
 
     select @refreshToken as refreshToken,
            @providerResponseXml as providerResponseXml,
