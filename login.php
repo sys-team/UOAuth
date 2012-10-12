@@ -61,11 +61,15 @@
             
             $mailruServiceName = "mailru";
             $mailruClientID = "689363";
+            
+            $odksServiceName = "odks";
+            $odksClientID = "93366272";
 
             $googleRedirectURL = $u_auth_server_url . "/". $googleServiceName ."/" . $client_id;
             $facebookRedirectURL = $u_auth_server_url . "/". $facebookServiceName ."/" . $client_id;
             $vkRedirectURL = $u_auth_server_url . "/". $vkServiceName ."/" . $client_id;
             $mailruRedirectURL = $u_auth_server_url . "/". $mailruServiceName ."/" . $client_id;
+            $odksRedirectURL = $u_auth_server_url . "/". $odksServiceName ."/" . $client_id;
             
             $googleAuthURL = "https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/userinfo.email+https://www.googleapis.com/auth/userinfo.profile&response_type=code&client_id=" . $googleClientID . "&redirect_uri=" . $googleRedirectURL;
             
@@ -74,6 +78,8 @@
             $vkAuthURL = "http://oauth.vk.com/authorize?scope=status&response_type=code&client_id=" . $vkClientID . "&redirect_uri=" . $vkRedirectURL;
             
             $mailruAuthURL = "https://connect.mail.ru/oauth/authorize?response_type=code&client_id=" . $mailruClientID . "&redirect_uri=" . $mailruRedirectURL;
+            
+            $odksAuthURL = "http://www.odnoklassniki.ru/oauth/authorize?response_type=code&client_id=" . $odksClientID . "&redirect_uri=" . $odksRedirectURL;
             
         ?>
         
@@ -101,6 +107,11 @@
                         <li class = "span3">
                             <a class="thumbnail" href="<?php echo $mailruAuthURL;?>">
                                 <img src="img/mailru-logo.png" class="img-rounded button-image">
+                            </a>
+                        </li>
+                        <li class = "span3">
+                            <a class="thumbnail" href="<?php echo $odksAuthURL;?>">
+                                <img src="img/odks-logo.png" class="img-rounded button-image">
                             </a>
                         </li>
                         <li class="span3"><small>ЮНЭКТ Группа компаний</small></li>
