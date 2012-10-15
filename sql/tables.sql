@@ -105,7 +105,7 @@ create table ua.accountProviderData(
     
     providerData xml,
     providerRefreshToken varchar(1024),
-    providerUid varchar(256),
+    providerUid varchar(256) not null,
     
     id integer default autoincrement,
     cts datetime default current timestamp,
@@ -114,8 +114,8 @@ create table ua.accountProviderData(
     xid uniqueidentifier default newid(),
     
     unique (xid),
-    //? unique (account, authProvider),
-    // drop unique ?
+    unique (authProvider, providerUid),
+
     primary key (id)
  
 )   
