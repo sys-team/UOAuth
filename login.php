@@ -73,7 +73,7 @@
             
             $googleAuthURL = "https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/userinfo.email+https://www.googleapis.com/auth/userinfo.profile&response_type=code&client_id=" . $googleClientID . "&redirect_uri=" . $googleRedirectURL;
             
-            $facebookAuthURL = "https://www.facebook.com/dialog/oauth?client_id=" . $facebookClientID . "&redirect_uri=" . $facebookRedirectURL;
+            $facebookAuthURL = "https://www.facebook.com/dialog/oauth?scope=email&client_id=" . $facebookClientID . "&redirect_uri=" . $facebookRedirectURL;
             
             $vkAuthURL = "http://oauth.vk.com/authorize?scope=status&response_type=code&client_id=" . $vkClientID . "&redirect_uri=" . $vkRedirectURL;
             
