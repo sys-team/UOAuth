@@ -27,6 +27,7 @@ begin
     declare @providerResponse long varchar;
     declare @providerResponseXml xml;
     declare @providerUid long varchar;
+    declare @providerError long varchar;
     
     declare @providerClientId varchar(1024);
     declare @providerClientSecret varchar(1024);
@@ -268,17 +269,22 @@ begin
             
                 select refreshToken,
                        providerResponseXml,
-                       providerUid
-                  into @refreshToken, @providerResponseXml, @providerUid
+                       providerUid,
+                       providerError
+                  into @refreshToken, @providerResponseXml, @providerUid, @providerError
                   from ua.authMailru(@eService, @eAuthCode, @clientCode);
+                  
+                if @providerError is not null then
+                    set @response = xmlconcat(xmlelement('error',@providerError), @response);
+                    return @response;
+                end if;
             
         end case;
         
         set @accountClientDataId = ua.registerAccount(@eService,
                                                       @clientCode,
                                                       @refreshToken,
-                                                      @providerResponseXml,
-                                                      @providerUid);
+                                                      @providerResponseXml);
         
         set @response =  xmlconcat( if (@needsRefreshToken = '1')
             then xmlelement('auth-code', ua.newAuthCode(@accountClientDataId))

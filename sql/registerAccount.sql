@@ -2,8 +2,7 @@ create or replace function ua.registerAccount(
     @authProviderCode long varchar,
     @clientCode long varchar,
     @refreshToken long varchar,
-    @providerData xml,
-    @providerUid long varchar default null
+    @providerData xml
 )
 returns integer
 begin
@@ -15,6 +14,8 @@ begin
     declare @email long varchar;
     declare @name long varchar;
     declare @code long varchar;
+    
+    declare @providerUid long varchar;
     
     case 
         when @authProviderCode in ('google','googlei') then
@@ -36,17 +37,37 @@ begin
         when @authProviderCode = 'vk' then
         
             select first_name +' '+ last_name,
-                   uid+'@vk.com'
-              into @name, @email
+                   uid+'@vk.com',
+                   uid 
+              into @name, @email, @providerUid
               from openxml(@providerData, '/*:response/*:user')
                    with(first_name long varchar '*:first_name', last_name long varchar '*:last_name', uid long varchar '*:uid')
-                          
+                   
+        when @authProviderCode = 'mailru' then
         
+            select fname+' '+lname as name,
+                   email,
+                   uid
+              into @name, @email, @providerUid
+              from openxml(@providerData, '/*:response_users_getInfo/*:user')
+                   with(fname long varchar '*:first_name',
+                        lname long varchar '*:last_name',
+                        email long varchar '*:email',
+                        uid long varchar '*:uid');
     end case;
     
-    set @accountId = (select id
-                        from ua.account
-                       where email = @email);
+    set @authProviderId = (select id
+                             from ua.authProvider
+                            where code = @authProviderCode);
+                       
+    
+    set @accountId = isnull((select account
+                               from ua.accountProviderData
+                              where providerUid = @providerUid
+                                and authProvider = @authProviderId),
+                            (select id
+                               from ua.account
+                              where email = @email));
     
     if @accountId is null then
     
@@ -63,10 +84,7 @@ begin
                            where email = @email);
     end if;
                        
-    set @authProviderId = (select id
-                             from ua.authProvider
-                            where code = @authProviderCode);
-                       
+
     set @accountProviderDataId = (select id
                                     from ua.accountProviderData
                                    where account = @accountId
