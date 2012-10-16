@@ -21,7 +21,6 @@ begin
     
     declare @clientId long varchar;
     declare @redirectUrl long varchar;
-    declare @needsRefreshToken integer;
     
     declare @tmp long varchar;
     declare @proxyUrl long varchar;
@@ -30,9 +29,8 @@ begin
     --set @proxyUrl = 'http://lamac.unact.ru/~sasha/UDUtils/proxy.php';
 
     select id,
-           redirectUrl,
-           needsRefreshToken
-      into @clientId, @redirectUrl, @needsRefreshToken
+           redirectUrl
+      into @clientId, @redirectUrl
       from ua.client
      where code = @clientCode;
 

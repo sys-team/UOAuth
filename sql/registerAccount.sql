@@ -63,6 +63,15 @@ begin
                         lname long varchar '*:last_name',
                         email long varchar '*:email',
                         uid long varchar '*:uid');
+                        
+        when @authProviderCode = 'odks' then
+        
+            select fname +' '+lname,
+                   uid
+              into @name, @providerUid
+              from openxml(@providerData, '/*:user')
+                   with(fname long varchar '*:first_name', lname long varchar '*:last_name',  uid long varchar '*:uid');
+
     end case;
     
     set @authProviderId = (select id

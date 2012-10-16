@@ -34,6 +34,7 @@ create table ua.authProvider(
     
     clientId varchar(1024) not null unique,
     clientSecret varchar(1024) not null,
+    clientPublicKey varchar(1024),
 
     id integer default autoincrement,
     cts datetime default current timestamp,

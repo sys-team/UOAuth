@@ -273,13 +273,22 @@ begin
                        providerError
                   into @refreshToken, @providerResponseXml, @providerUid, @providerError
                   from ua.authMailru(@eService, @eAuthCode, @clientCode);
-                  
-                if @providerError is not null then
-                    set @response = xmlconcat(xmlelement('error',@providerError), @response);
-                    return @response;
-                end if;
+                
+            when @eService = 'odks' then
+            
+                select refreshToken,
+                       providerResponseXml,
+                       providerUid,
+                       providerError
+                  into @refreshToken, @providerResponseXml, @providerUid, @providerError
+                  from ua.authOdks(@eService, @eAuthCode, @clientCode);
             
         end case;
+        
+        if @providerError is not null then
+            set @response = xmlconcat(xmlelement('error',@providerError), @response);
+            return @response;
+        end if;
         
         set @accountClientDataId = ua.registerAccount(@eService,
                                                       @clientCode,
@@ -301,8 +310,7 @@ begin
             return @response;
 
     end;
-    
-
+   
     return @response;
 
 end
