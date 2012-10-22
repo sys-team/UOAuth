@@ -7,7 +7,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href='http://fonts.googleapis.com/css?family=Didact+Gothic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
-        <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         
         <style>
             .button-image{
@@ -86,41 +86,41 @@
         <div class = "container">
             <div class="row">
                 <div class="span4"></div>
-                <div class="span3">	
+                <div class="span4">	
                     <ul class="thumbnails">
-                        <li class="span3"><p class="lead">Войти&nbsp;с&nbsp;помощью</p></li>
-                        <li class="span3">
+                        <li class="span4"><p class="lead">Войти&nbsp;с&nbsp;помощью</p></li>
+                        <li class="span4">
                             <a class="thumbnail" href="<?php echo $googleAuthURL;?>">
                                 <img src="img/google-logo.png" class="img-rounded button-image">
                             </a>
                         </li>
-                        <li class="span3">
+                        <li class="span4">
                             <a class="thumbnail" href="<?php echo $facebookAuthURL;?>">
                                 <img src="img/facebook-logo.png" class="img-rounded button-image">
                             </a>
                         </li>
-                        <li class = "span3">
+                        <li class = "span4">
                             <a class="thumbnail" href="<?php echo $vkAuthURL;?>">
                                 <img src="img/vk-logo.png" class="img-rounded button-image">
                             </a>
                         </li>
-                        <li class = "span3">
+                        <li class = "span4">
                             <a class="thumbnail" href="<?php echo $mailruAuthURL;?>">
                                 <img src="img/mailru-logo.png" class="img-rounded button-image">
                             </a>
                         </li>
-                        <li class = "span3">
+                        <li class = "span4">
                             <a class="thumbnail" href="<?php echo $odksAuthURL;?>">
                                 <img src="img/odks-logo.png" class="img-rounded button-image">
                             </a>
                         </li>
-                        <li class="span3"><small>ЮНЭКТ Группа компаний</small></li>
+                        <li class="span4"><small>ЮНЭКТ Группа компаний</small></li>
                     </ul>
                 </div>
             </div>
         </div>
         
-        <script src="bootstrap/js/bootstrap.min.js"></script>
+        <script src="/bootstrap/js/bootstrap.min.js"></script>
         
     </body>
     
