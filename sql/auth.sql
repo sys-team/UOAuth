@@ -50,7 +50,10 @@ begin
     declare @url long varchar;
 
     declare @uAuthCode varchar(256);
+    declare @proxyUrl long varchar;
     -------
+    
+    set @proxyUrl = 'https://system.unact.ru/utils/proxy.php';
     
     set @eService = http_variable('e_service');
     set @eAuthCode = http_variable('e_code');
@@ -139,8 +142,9 @@ begin
                 insert into ua.googleLog with auto name
                 select @xid as xid,
                        @accessTokenUrl+'/tokeninfo?access_token='+@accessToken as url;
-        
-                set @providerResponse = google.googleapisGet(@accessTokenUrl+'/tokeninfo?access_token='+@accessToken);
+                       
+                set @providerResponse =  ua.systemProxyGet(@proxyUrl+ '?_address=' + @accessTokenUrl+'/tokeninfo?access_token='+@accessToken);
+                --set @providerResponse = google.googleapisGet(@accessTokenUrl+'/tokeninfo?access_token='+@accessToken);
                 
                 update ua.googleLog
                    set response = @providerResponse
@@ -166,7 +170,8 @@ begin
                 select @xid as xid,
                        @accessTokenUrl+'/userinfo?access_token='+@accessToken as url;
                        
-                set @providerResponse = google.googleapisGet(@accessTokenUrl+'/userinfo?access_token='+@accessToken);
+                set @providerResponse = ua.systemProxyGet(@proxyUrl+ '?_address=' + @accessTokenUrl+'/userinfo?access_token='+@accessToken);
+                --set @providerResponse = google.googleapisGet(@accessTokenUrl+'/userinfo?access_token='+@accessToken);
                 
                 update ua.googleLog
                    set response = @providerResponse
