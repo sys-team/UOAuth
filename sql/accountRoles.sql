@@ -5,8 +5,8 @@ begin
     
     set @result =( select
             xmlelement( 'roles'
-                ,xmlagg(xmlelement('role',r.code,xmlattributes('data',ar.data)))
-                ,xmlelement('role','authenticated')
+                ,xmlagg(xmlelement('role',xmlforest(r.code,ar.data)))
+                ,xmlelement('role',xmlelement('code','authenticated'))
             )
         from ua.accountRole ar join ua.role r on ar.role = r.id
         where ar.account = @accountId)
@@ -14,5 +14,4 @@ begin
  
     return @result;
 
-end
-;
+end;
