@@ -12,10 +12,10 @@ begin
     set @password = isnull(http_variable('password'),'');
     set @email = isnull(http_variable('email'),'');
     
-    -- мин 6-ть символов
-    -- есть цифра или спецсимвол
-    -- есть маленькие буквы
-    -- есть большие буквы
+    -- min 6 char length
+    -- number or spechial char
+    -- lowercase
+    -- uppercase
     if @password not regexp '(?=^.{6,}$)((?=.*\d)|(?=.*\W))(?=.*[a-z])(?=.*[A-Z]).*$' then
         set @result = xmlelement('error','Wrong password');
         return @result;
@@ -31,7 +31,7 @@ begin
         return @result;
     end if;
     
-    -- удалим "протухший" логин
+    -- delete rotten login
     delete from dbo.udUser
      where (username = @login
         or email = @email)

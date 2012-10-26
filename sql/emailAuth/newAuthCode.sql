@@ -6,7 +6,8 @@ begin
     set @code = uuidtostr(newid());
     
     update dbo.udUser
-       set authCode = @code
+       set authCode = @code,
+           authCodeTs = now()
      where id = @userId;
      
     return @code;

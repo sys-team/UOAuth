@@ -287,6 +287,15 @@ begin
                        providerError
                   into @refreshToken, @providerResponseXml, @providerUid, @providerError
                   from ua.authOdks(@eService, @eAuthCode, @clientCode);
+                  
+            when @eService = 'emailAuth' then
+            
+                select refreshToken,
+                       providerResponseXml,
+                       providerUid,
+                       providerError
+                  into @refreshToken, @providerResponseXml, @providerUid, @providerError
+                  from ua.authEMailAuth(@eAuthCode);            
             
         end case;
         

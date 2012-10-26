@@ -17,6 +17,7 @@ begin
     
     declare @providerUid long varchar;
     
+    
     case 
         when @authProviderCode in ('google','googlei') then
             select email,
@@ -72,7 +73,19 @@ begin
               from openxml(@providerData, '/*:user')
                    with(fname long varchar '*:first_name', lname long varchar '*:last_name',  uid long varchar '*:uid');
 
+        when @authProviderCode = 'emailAuth' then
+        
+            select name,
+                   email,
+                   uid
+              into @name, @email, @providerUid
+              from openxml(@providerData , '/*:response')
+                   with(name  long varchar 'login', email long varchar 'email', uid long varchar 'uid');
+
     end case;
+    
+    --message 'ua.registerAccount @providerData = ', @providerData; 
+    --message 'ua.registerAccount @name = ',@name,' @email = ', @email, ' @providerUid = ', @providerUid;
     
     set @authProviderId = (select id
                              from ua.authProvider
