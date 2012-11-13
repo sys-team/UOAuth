@@ -8,9 +8,17 @@ begin
     declare @deviceXid uniqueidentifier;
     declare @deviceId integer;
     declare @activationCode long varchar;
+    declare @xid uniqueidentifier;
     
     set @pushToken = isnull(http_variable('push_token'),'');
     set @deviceType = isnull(http_variable('device_type'),'');
+    
+    set @xid = newid();
+
+    insert into upa.registerLog with auto name
+    select @xid as xid,
+           @pushToken as pushToken,
+           @deviceType as deviceType;
     
     if @pushToken = '' or @deviceType = '' then
         set @response = xmlelement('error','push_token or device_type missing');
@@ -49,6 +57,10 @@ begin
         call upa.pushMessageToDevice(@deviceId, '"activation_code":"' + @activationCode + '"');
         
     end if;
+    
+    update upa.registerLog
+       set response = @response
+     where xid = @xid;
     
     return @response;
 end

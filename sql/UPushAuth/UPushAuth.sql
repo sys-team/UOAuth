@@ -13,7 +13,7 @@ begin
         when 'auth' then
             set @response = upa.auth();
         when 'check-credentials' then
-            set @responce = upa.checkCredentials();
+            set @response = upa.checkCredentials();
         
     end case;
 
