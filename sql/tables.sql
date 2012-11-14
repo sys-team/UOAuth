@@ -73,8 +73,6 @@ create table ua.clientAuthProviderRegData(
 comment on table ua.clientAuthProviderRegData is 'Дополнительные данные клиента для провайдера OAuth'
 ;
 
-
-
 create table ua.account(
 
     name varchar(1024) not null,
@@ -95,6 +93,7 @@ create table ua.account(
 ;
 comment on table ua.account is 'Пользователь'
 ;
+create text index xt_account_name_email_code on ua.account(name, email, code);
 
 create table ua.accountProviderData(
 
