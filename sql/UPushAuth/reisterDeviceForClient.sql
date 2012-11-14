@@ -3,6 +3,7 @@ begin
     declare @secret long varchar;
     declare @authCode long varchar;
     declare @cliId integer;
+    declare @id integer;
     
     set @secret = uuidtostr(newid());
     set @authCode = uuidtostr(newid());
@@ -21,9 +22,12 @@ begin
            @authCode as authCode,
            @cliId as client,
            @deviceId as device;
+           
+    set @id = @@identity;
 
     select @secret as secret,
-           @authCode as authCode;
+           @authCode as authCode,
+           @id as id;
 
 end
 ;

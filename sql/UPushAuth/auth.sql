@@ -9,6 +9,7 @@ begin
     declare @deviceId integer;
     declare @secret long varchar;
     declare @authCode long varchar;
+    declare @id integer;
     
     set @clientId = isnull(http_variable('client_id'),'');
     set @redirectUrl = isnull(http_variable('redirect_uri'),'');
@@ -54,13 +55,14 @@ begin
                   and registered = 1) then
                   
         select secret,
-               authCode
-          into @secret, @authCode
+               authCode,
+               id
+          into @secret, @authCode, @id
           from upa.reisterDeviceForClient(@deviceId, @clientId);
           
-        set @response = xmlelement('code', @authCode);
+        set @response = xmlconcat(xmlelement('code', @authCode), xmlelement('id', @id));
         
-        call upa.pushMessageToDevice(@deviceId, '"client_secret":"' + @secret + '"');
+        call upa.pushMessageToDevice(@deviceId, '"client_secret":{"value":"' + @secret + '","id":"'+cast(@id as varchar(24)) + '"}');
          
     else
         set @response = xmlelement('error','device_id not registered yet');
