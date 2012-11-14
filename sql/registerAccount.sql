@@ -81,6 +81,14 @@ begin
               into @name, @email, @providerUid
               from openxml(@providerData , '/*:response')
                    with(name  long varchar 'login', email long varchar 'email', uid long varchar 'uid');
+                   
+        when @authProviderCode = 'UPushAuth' then
+        
+            select type + ' ' + xid,
+                   xid
+              into @name, @providerUid
+              from openxml(@providerData,'/*:response/*:device')
+                   with(type long varchar 'type', xid long varchar 'xid');
 
     end case;
     

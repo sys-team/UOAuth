@@ -19,8 +19,9 @@ begin
     declare @response xml;
     declare @error long varchar;
     
-    declare @eService varchar(128);
-    declare @eAuthCode varchar(1024);
+    declare @eService long varchar;
+    declare @eAuthCode long varchar;
+    declare @eRedirectUrl long varchar;
     
     declare @refreshTokenUrl long varchar;
     declare @accessTokenUrl long varchar;
@@ -29,17 +30,17 @@ begin
     declare @providerUid long varchar;
     declare @providerError long varchar;
     
-    declare @providerClientId varchar(1024);
-    declare @providerClientSecret varchar(1024);
+    declare @providerClientId long varchar;
+    declare @providerClientSecret long varchar;
     declare @providerRedirectUrl long varchar;
     
-    declare @refreshToken varchar(1024);
-    declare @accessToken varchar(1024);
-    declare @audience varchar(1024);
+    declare @refreshToken long varchar;
+    declare @accessToken long varchar;
+    declare @audience long varchar;
     
     declare @xid uniqueidentifier;
     
-    declare @clientCode varchar(256);
+    declare @clientCode long varchar;
     declare @clientId integer;
     declare @redirectUrl long varchar;
 
@@ -49,7 +50,7 @@ begin
     
     declare @url long varchar;
 
-    declare @uAuthCode varchar(256);
+    declare @uAuthCode long varchar;
     declare @proxyUrl long varchar;
     -------
     
@@ -58,6 +59,8 @@ begin
     set @eService = http_variable('e_service');
     set @eAuthCode = http_variable('e_code');
     set @clientCode = http_variable('client_id');
+    set @eRedirectUrl = http_variable('redirect_uri');
+
     
     --message 'ua.auth @eService = ', @eService,' @eAuthCode = ', @eAuthCode,' @clientCode = ', @clientCode;
     
@@ -295,8 +298,17 @@ begin
                        providerUid,
                        providerError
                   into @refreshToken, @providerResponseXml, @providerUid, @providerError
-                  from ua.authEMailAuth(@eAuthCode);            
+                  from ua.authEMailAuth(@eAuthCode);
+                  
+            when @eService = 'UPushAuth' then
             
+                select refreshToken,
+                       providerResponseXml,
+                       providerUid,
+                       providerError
+                  into @refreshToken, @providerResponseXml, @providerUid, @providerError
+                  from ua.authUPushAuth(@eAuthCode, @clientCode, @eRedirectUrl);
+                  
         end case;
         
         if @providerError is not null then
