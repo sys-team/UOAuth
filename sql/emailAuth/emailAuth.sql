@@ -14,7 +14,7 @@ begin
             set @response = ea.roles();
     end case;
         
-    set @response = xmlelement('response', @response);
+    set @response = xmlelement('response', xmlattributes('https://github.com/Unact/UOAuth' as "xmlns"), @response);
         
     return @response;  
 end

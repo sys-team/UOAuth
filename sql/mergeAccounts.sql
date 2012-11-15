@@ -36,9 +36,6 @@ begin
                           
     delete ua.accountRole
      where account = @source;
-                               
-    delete from ua.account
-     where id = @source;
 
 end
 ;
