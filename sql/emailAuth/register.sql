@@ -1,34 +1,60 @@
 create or replace function ea.register()
 returns xml
 begin
-    declare @result xml;
+    declare @response xml;
     
     declare @login long varchar;
     declare @password long varchar;
     declare @email long varchar;
     declare @userId integer;
+    declare @xid uniqueidentifier;
 
     set @login = isnull(http_variable('login'),'');
     set @password = isnull(http_variable('password'),'');
     set @email = isnull(http_variable('email'),'');
+    
+    set @xid = newid();
+    
+    insert into ea.log with auto name
+    select @xid as xid,
+           'register' as service,
+           http_body() as httpBody,
+           @login as "login",
+           @password as password,
+           @email as email;
     
     -- min 6 char length
     -- number or spechial char
     -- lowercase
     -- uppercase
     if @password not regexp '(?=^.{6,}$)((?=.*\d)|(?=.*\W))(?=.*[a-z])(?=.*[A-Z]).*$' then
-        set @result = xmlelement('error','Wrong password');
-        return @result;
+        set @response = xmlelement('error','Wrong password');
+        
+        update ea.log
+           set response = @response
+         where xid = @xid;
+         
+        return @response;
     end if;
     
     if @email not regexp '.+@.+\..+' then
-        set @result = xmlelement('error','Wrong email address');
-        return @result;
+        set @response = xmlelement('error','Wrong email address');
+        
+        update ea.log
+           set response = @response
+         where xid = @xid;
+        
+        return @response;
     end if;
     
     if length(@login) = 0 then
-        set @result = xmlelement('error','Wrong login');
-        return @result;
+        set @response = xmlelement('error','Wrong login');
+        
+        update ea.log
+           set response = @response
+         where xid = @xid;
+        
+        return @response;
     end if;
     
     -- delete rotten login
@@ -44,8 +70,13 @@ begin
                   or email = @email)
                  and (confirmed = 1
                   or password <> hash(@password,'SHA256'))) then
-        set @result = xmlelement('error','Login already in use');
-        return @result;
+        set @response = xmlelement('error','Login already in use');
+        
+        update ea.log
+           set response = @response
+         where xid = @xid; 
+        
+        return @response;
     end if;
     
     set @userId = (select id
@@ -57,8 +88,12 @@ begin
     
     call ea.sendConfirmation(@userId);
     
-    set @result = xmlelement('registered');
+    set @response = xmlelement('registered');
     
-    return @result;
+    update ea.log
+       set response = @response
+     where xid = @xid;
+    
+    return @response;
 end
 ;

@@ -5,8 +5,17 @@ begin
     declare @response xml;
     declare @code long varchar;
     declare @userId integer;
+    declare @xid uniqueidentifier;
     
     set @code = isnull(http_variable('code'),'');
+    
+    set @xid = newid();
+    
+    insert into ea.log with auto name
+    select @xid as xid,
+           'confirm' as service,
+           http_body() as httpBody,
+           @code as code;
     
     set @userId = (select id
                      from dbo.udUser
@@ -16,16 +25,18 @@ begin
     
     if @userId is null then
         set @response = xmlelement('error','Wrong confirmation code');
-        return @response;
+    else 
+        update dbo.udUser
+           set confirmed = 1
+         where id = @userId;
+         
+        set @response = xmlelement('code', ea.newAuthCode(@userId));
     end if;
     
-    update dbo.udUser
-       set confirmed = 1
-     where id = @userId;
-     
-    set @response = xmlelement('code', ea.newAuthCode(@userId));
+    update ea.log
+       set response = @response
+     where xid = @xid;
 
     return @response;
-
 end
 ;

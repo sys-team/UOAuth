@@ -5,9 +5,19 @@ begin
     declare @login long varchar;
     declare @password long varchar;
     declare @userId integer;
+    declare @xid uniqueidentifier;
     
     set @login = http_variable('login');
     set @password = http_variable('password');
+    
+    set @xid = newid();
+    
+    insert into ea.log with auto name
+    select @xid as xid,
+           'login' as service,
+           http_body() as httpBody,
+           @login as "login",
+           @password as password;
     
     set @userId = (select id
                      from dbo.udUser
@@ -21,6 +31,10 @@ begin
     else
         set @response = xmlelement('code', ea.newAuthCode(@userId));
     end if;
+    
+    update ea.log
+       set response = @response
+     where xid = @xid;
     
     return @response;
     
