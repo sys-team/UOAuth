@@ -8,10 +8,13 @@ begin
     declare @email long varchar;
     declare @userId integer;
     declare @xid uniqueidentifier;
+    declare @callback long varchar;
+    declare @msg xml;
 
     set @login = isnull(http_variable('login'),'');
     set @password = isnull(http_variable('password'),'');
     set @email = isnull(http_variable('email'),'');
+    set @callback = isnull(http_variable('callback'),'');
     
     set @xid = newid();
     
@@ -28,7 +31,7 @@ begin
     -- lowercase
     -- uppercase
     if @password not regexp '(?=^.{6,}$)((?=.*\d)|(?=.*\W))(?=.*[a-z])(?=.*[A-Z]).*$' then
-        set @response = xmlelement('error','Wrong password');
+        set @response = xmlelement('error','Password must be at least 6 characters, including a uppercase letter and a special character or number');
         
         update ea.log
            set response = @response
@@ -63,14 +66,20 @@ begin
         or email = @email)
        and confirmed = 0
        and confirmationTs < dateadd(minute, -30, now());
+       
+    set @msg = (select xmlconcat(
+                       if username = @login then xmlelement('error','Login already in use') else null endif,
+                       if email = @email then xmlelement('error','Email allready in use') else null endif,
+                       if confirmed = 1 and password <> hash(@password,'SHA256') then xmlelement('error','Password mismatch for confirmed user') else null endif)
+                  from dbo.udUser
+                 where (username = @login
+                    or email = @email)
+                   and (confirmed = 1
+                    or password <> hash(@password,'SHA256')));
     
-    if exists(select *
-                from dbo.udUser
-               where (username = @login
-                  or email = @email)
-                 and (confirmed = 1
-                  or password <> hash(@password,'SHA256'))) then
-        set @response = xmlelement('error','Login already in use');
+    if @msg is not null then
+                         
+        set @response =  @msg;
         
         update ea.log
            set response = @response
@@ -86,7 +95,7 @@ begin
     
     set @userId = ea.registerUser(@userId, @login, @email, @password);
     
-    call ea.sendConfirmation(@userId);
+    call ea.sendConfirmation(@userId, @callback);
     
     set @response = xmlelement('registered');
     
