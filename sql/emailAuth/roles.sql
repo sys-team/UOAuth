@@ -1,12 +1,11 @@
-create or replace function ea.roles()
+create or replace function ea.roles(
+    @code long varchar default http_variable('code')
+)
 returns xml
 begin
     declare @response xml;
-    declare @code long varchar;
     declare @accountId integer;
     declare @xid uniqueidentifier;
-    
-    set @code = isnull(http_variable('code'),'');
     
     set @xid = newid();
     
@@ -24,8 +23,7 @@ begin
     if @accountId is null then
         set @response = xmlelement('error','Not authorized');
     else
-    
-        set @response = xmlconcat(
+         set @response = xmlconcat(
             ea.accountRoles(@accountId),
             ea.accountData (@accountId)
         );

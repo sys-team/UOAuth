@@ -31,7 +31,7 @@ begin
     -- lowercase
     -- uppercase
     if @password not regexp '(?=^.{6,}$)((?=.*\d)|(?=.*\W))(?=.*[a-z])(?=.*[A-Z]).*$' then
-        set @response = xmlelement('error','Password must be at least 6 characters, including a uppercase letter and a special character or number');
+        set @response = xmlelement('error','Password must be at least 6 characters, including an uppercase letter and a special character or number');
         
         update ea.log
            set response = @response
