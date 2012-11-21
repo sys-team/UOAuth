@@ -1,14 +1,12 @@
-create or replace function ea."login"()
+create or replace function ea."login"(
+    @login long varchar default http_variable('login'),
+    @password long varchar default http_variable('password')
+)
 returns xml
 begin
     declare @response xml;
-    declare @login long varchar;
-    declare @password long varchar;
     declare @userId integer;
     declare @xid uniqueidentifier;
-    
-    set @login = http_variable('login');
-    set @password = http_variable('password');
     
     set @xid = newid();
     
@@ -27,7 +25,7 @@ begin
                       and confirmed = 1);
                       
     if @userId is null then
-        set @response = xmlelement('error', 'Not authorized');
+        set @response = xmlelement('error', 'Wrong login or password');
     else
         set @response = xmlelement('code', ea.newAuthCode(@userId));
     end if;

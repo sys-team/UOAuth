@@ -1,6 +1,8 @@
 create or replace procedure ea.sendConfirmation(
     @userId integer,
-    @callback long varchar default null
+    @callback long varchar default null,
+    @smtpSender long varchar default null,
+    @smtpServer long varchar default null
 )
 begin
 
@@ -18,9 +20,13 @@ begin
       
 
     set @msg = '<p><span>Code: </span><span>' + @code + '</span></p>'
-             + if @callback is not null then '<p><span>' + @callback + @addChar + 'code=' + @code + '</span></p>' else '' endif;
+             + if @callback is not null then '<p><span>' + @callback + @addChar + 'code=' + @code + '</span></p>' else '' endif;    
 
-    call email(@email,'EA Comnfimation Code',@msg);
+    if @smtpSender is null then
+        call email(@email,'EA Comnfimation Code',@msg);
+    else
+        call email(@email,'EA Comnfimation Code',@msg, @smtpSender, @smtpServer);
+    end if;
     
     return;
 

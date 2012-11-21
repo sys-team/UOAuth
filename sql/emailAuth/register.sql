@@ -10,11 +10,15 @@ begin
     declare @xid uniqueidentifier;
     declare @callback long varchar;
     declare @msg xml;
+    declare @smtpSender long varchar;
+    declare @smtpServer long varchar;
 
     set @login = isnull(http_variable('login'),'');
     set @password = isnull(http_variable('password'),'');
     set @email = isnull(http_variable('email'),'');
     set @callback = isnull(http_variable('callback'),'');
+    set @smtpSender = http_variable('smtp-sender');
+    set @smtpServer = http_variable('smtp-server');
     
     set @xid = newid();
     
@@ -25,23 +29,19 @@ begin
            @login as "login",
            @password as password,
            @email as email;
-    
-    -- min 6 char length
-    -- number or spechial char
-    -- lowercase
-    -- uppercase
-    if @password not regexp '(?=^.{6,}$)((?=.*\d)|(?=.*\W))(?=.*[a-z])(?=.*[A-Z]).*$' then
-        set @response = xmlelement('error','Password must be at least 6 characters, including an uppercase letter and a special character or number');
+           
+    if @login not regexp '[[:alnum:].-_]{3,15}' then
+        set @response = xmlelement('error','Login must be at least 3, maximum 15 character in length and contains only alphanumeric, underscore and dash characters');
         
         update ea.log
            set response = @response
          where xid = @xid;
-         
+        
         return @response;
     end if;
     
     if @email not regexp '.+@.+\..+' then
-        set @response = xmlelement('error','Wrong email address');
+        set @response = xmlelement('error','Incorrect email address');
         
         update ea.log
            set response = @response
@@ -50,26 +50,9 @@ begin
         return @response;
     end if;
     
-    if length(@login) = 0 then
-        set @response = xmlelement('error','Wrong login');
-        
-        update ea.log
-           set response = @response
-         where xid = @xid;
-        
-        return @response;
-    end if;
-    
-    -- delete rotten login
-    delete from dbo.udUser
-     where (username = @login
-        or email = @email)
-       and confirmed = 0
-       and confirmationTs < dateadd(minute, -30, now());
-       
     set @msg = (select xmlconcat(
-                       if username = @login then xmlelement('error','Login already in use') else null endif,
-                       if email = @email then xmlelement('error','Email allready in use') else null endif,
+                       if username = @login then xmlelement('error','This name is already in use') else null endif,
+                       if email = @email then xmlelement('error','This email is already in use') else null endif,
                        if confirmed = 1 and password <> hash(@password,'SHA256') then xmlelement('error','Password mismatch for confirmed user') else null endif)
                   from dbo.udUser
                  where (username = @login
@@ -88,6 +71,30 @@ begin
         return @response;
     end if;
     
+    -- min 6 char length
+    -- number or spechial char
+    -- lowercase
+    -- uppercase
+    if @password not regexp '(?=^.{6,}$)((?=.*\d)|(?=.*\W))(?=.*[a-z])(?=.*[A-Z]).*$' then
+        set @response = xmlelement('error','Password must be at least 6 characters, including an uppercase letter and a special character or number');
+        
+        update ea.log
+           set response = @response
+         where xid = @xid;
+         
+        return @response;
+    end if;
+    
+
+    
+    -- delete rotten login
+    delete from dbo.udUser
+     where (username = @login
+        or email = @email)
+       and confirmed = 0
+       and confirmationTs < dateadd(minute, -30, now());
+       
+    
     set @userId = (select id
                      from dbo.udUser
                     where username = @login
@@ -95,7 +102,7 @@ begin
     
     set @userId = ea.registerUser(@userId, @login, @email, @password);
     
-    call ea.sendConfirmation(@userId, @callback);
+    call ea.sendConfirmation(@userId, @callback, @smtpSender, @smtpServer);
     
     set @response = xmlelement('registered');
     
