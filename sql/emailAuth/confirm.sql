@@ -31,7 +31,7 @@ begin
            set confirmed = 1
          where id = @userId;
          
-        set @response = xmlelement('code', ea.newAuthCode(@userId));
+        set @response = xmlelement('access_token', ea.newAuthCode(@userId));
     end if;
     
     update ea.log
