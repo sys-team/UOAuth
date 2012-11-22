@@ -41,7 +41,7 @@ begin
     end if;
     
     if @email not regexp '.+@.+\..+' then
-        set @response = xmlelement('error','Incorrect email address');
+        set @response = xmlelement('error','Ivalid email address');
         
         update ea.log
            set response = @response
