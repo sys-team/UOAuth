@@ -1,5 +1,5 @@
 create or replace function ea.roles(
-    @code long varchar default http_variable('code')
+    @code long varchar default http_variable('access_token')
 )
 returns xml
 begin
