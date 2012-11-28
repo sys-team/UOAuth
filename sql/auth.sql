@@ -186,7 +186,7 @@ begin
                 
             when @eService = 'facebook' then
             
-                set @url = @refreshTokenUrl + '?client_id=' + @providerClientId
+                set @url = @refreshTokenUrl + '&client_id=' + @providerClientId
                                             + '&client_secret=' + @providerClientSecret
                                             + '&redirect_uri=' + @providerRedirectUrl
                                             + '&code=' +  @eAuthCode;
@@ -198,7 +198,7 @@ begin
                        @url as url;
             
                 -- acesss_token
-                set @providerResponse = fb.get(@url);
+                set @providerResponse = ua.systemProxyGet(@proxyUrl + '?_address=' + @url);
                                                
                 update ua.fbLog
                    set response = @providerResponse
@@ -219,7 +219,7 @@ begin
                 
                 --'@mp:xmltext'
                 -- user data            
-                set @url = @accessTokenUrl + '?access_token=' + @accessToken;
+                set @url = @accessTokenUrl + '&access_token=' + @accessToken;
                 
                 set @xid = newid();
                 
@@ -227,7 +227,7 @@ begin
                 select @xid as xid,
                        @url as url;
             
-                set @providerResponse = fb.get(@url);
+                set @providerResponse = ua.systemProxyGet(@proxyUrl + '?_address=' + @url);
                                                
                 update ua.fbLog
                    set response = @providerResponse
