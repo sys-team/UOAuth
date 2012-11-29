@@ -10,5 +10,5 @@ create or replace function google.processAuthCode
 returns long varchar
 url '!url'
 type 'HTTP:POST'
-certificate 'file="c:\asafiles\accounts.google.com.crt"'
+certificate 'file="c:\asafiles\system.unact.ru.crt"'
 ;

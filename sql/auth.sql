@@ -121,7 +121,8 @@ begin
                         +'&grant_type=authorization_code'+'&redirect-uri='+isnull(@providerRedirectUrl,'urn:ietf:wg:oauth:2.0:oob') as request;
                 
                 
-                set @providerResponse = google.processAuthCode(@refreshTokenUrl, @eAuthCode, @providerClientId, @providerClientSecret,
+                set @providerResponse = google.processAuthCode(@proxyUrl + '?_address=' +@refreshTokenUrl,
+                                                               @eAuthCode, @providerClientId, @providerClientSecret,
                                                                isnull(@providerRedirectUrl,'urn:ietf:wg:oauth:2.0:oob'));
 
                 
