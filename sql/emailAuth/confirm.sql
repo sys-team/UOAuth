@@ -24,7 +24,7 @@ begin
                       and confirmed = 0);
     
     if @userId is null then
-        set @response = xmlelement('error','Wrong confirmation code');
+        set @response = xmlelement('error',xmlattributes('InvalidCode' as "code"), 'Wrong confirmation code');
     else
 
         update dbo.udUser

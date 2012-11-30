@@ -21,7 +21,7 @@ begin
                          and authCode = @code);
     
     if @accountId is null then
-        set @response = xmlelement('error','Not authorized');
+        set @response = xmlelement('error', xmlattributes('InvalidAccessToken' as "code"),'Not authorized');
     else
          set @response = xmlconcat(
             ea.accountRoles(@accountId),

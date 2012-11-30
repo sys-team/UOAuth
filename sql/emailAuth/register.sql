@@ -31,7 +31,8 @@ begin
            @email as email;
            
     if @login not regexp '[[:alnum:].-_]{3,15}' then
-        set @response = xmlelement('error','Login must be at least 3, maximum 15 character in length and contains only alphanumeric, underscore and dash characters');
+        set @response = xmlelement('error', xmlattributes('InvalidLogin' as "code"),
+                       'Login must be at least 3, maximum 15 character in length and contains only alphanumeric, underscore and dash characters');
         
         update ea.log
            set response = @response
@@ -41,7 +42,8 @@ begin
     end if;
     
     if @email not regexp '.+@.+\..+' then
-        set @response = xmlelement('error','Ivalid email address');
+        set @response = xmlelement('error', xmlattributes('InvalidEmail' as "code"),
+                                   'Invalid email address');
         
         update ea.log
            set response = @response
@@ -51,9 +53,9 @@ begin
     end if;
     
     set @msg = (select xmlconcat(
-                       if username = @login then xmlelement('error','This name is already in use') else null endif,
-                       if email = @email then xmlelement('error','This email is already in use') else null endif,
-                       if confirmed = 1 and password <> hash(@password,'SHA256') then xmlelement('error','Password mismatch for confirmed user') else null endif)
+                       if username = @login then xmlelement('error',xmlattributes('LoginInUse' as "code"), 'This name is already in use') else null endif,
+                       if email = @email then xmlelement('error',xmlattributes('EmailInUse' as "code"),'This email is already in use') else null endif,
+                       if confirmed = 1 and password <> hash(@password,'SHA256') then xmlelement('error',xmlattributes('PassMismatch' as "code"),'Password mismatch for confirmed user') else null endif)
                   from dbo.udUser
                  where (username = @login
                     or email = @email)
@@ -76,7 +78,8 @@ begin
     -- lowercase
     -- uppercase
     if @password not regexp '(?=^.{6,}$)((?=.*\d)|(?=.*\W))(?=.*[a-z])(?=.*[A-Z]).*$' then
-        set @response = xmlelement('error','Password must be at least 6 characters, including an uppercase letter and a special character or number');
+        set @response = xmlelement('error', xmlattributes('InvalidPass' as "code"),
+                                  'Password must be at least 6 characters, including an uppercase letter and a special character or number');
         
         update ea.log
            set response = @response

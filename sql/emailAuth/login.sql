@@ -25,7 +25,7 @@ begin
                       and confirmed = 1);
                       
     if @userId is null then
-        set @response = xmlelement('error', 'Wrong login or password');
+        set @response = xmlelement('error', xmlattributes('InvalidLogPass' as "code"), 'Wrong login or password');
     else
         set @response = xmlelement('access_token', ea.newAuthCode(@userId));
     end if;
