@@ -16,7 +16,7 @@ begin
            @code as code;
     
     set @accountId = (select id
-                        from dbo.udUser
+                        from ea.user
                        where confirmed = 1
                          and authCode = @code);
     

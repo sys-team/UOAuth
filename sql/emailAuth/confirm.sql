@@ -18,7 +18,7 @@ begin
            @code as code;
     
     set @userId = (select id
-                     from dbo.udUser
+                     from ea.user
                     where confirmationCode = @code
                       and confirmationTs >= dateadd(minute, -30, now())
                       and confirmed = 0);
@@ -27,7 +27,7 @@ begin
         set @response = xmlelement('error',xmlattributes('InvalidCode' as "code"), 'Wrong confirmation code');
     else
 
-        update dbo.udUser
+        update ea.user
            set confirmed = 1
          where id = @userId;
          

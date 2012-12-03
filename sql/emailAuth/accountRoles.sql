@@ -4,7 +4,7 @@ begin
     declare @result xml;
     
     set @result = (select xmlelement( 'roles', xmlelement('role',xmlelement('code','authenticated')))
-                     from dbo.udUser
+                     from ea.user
                     where id = @accountId);
  
     return @result;

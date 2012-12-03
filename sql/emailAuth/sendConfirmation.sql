@@ -16,7 +16,7 @@ begin
     select email,
            confirmationCode
       into @email, @code
-      from dbo.udUser where id = @userId;
+      from ea.user where id = @userId;
       
 
     set @msg = '<p><span>Code: </span><span>' + @code + '</span></p>'

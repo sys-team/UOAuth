@@ -18,7 +18,7 @@ begin
            @password as password;
     
     set @userId = (select id
-                     from dbo.udUser
+                     from ea.user
                     where (username = @login
                        or email = @login)
                       and password = hash(@password,'SHA256')

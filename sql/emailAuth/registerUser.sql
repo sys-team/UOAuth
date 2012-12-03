@@ -8,7 +8,7 @@ returns integer
 begin
     declare @result integer;
     
-    insert into dbo.udUser on existing update with auto name
+    insert into ea.user on existing update with auto name
     select @id as id,
            @login as username,
            hash(@password,'SHA256') as password,
