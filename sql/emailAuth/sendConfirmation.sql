@@ -23,9 +23,9 @@ begin
              + if @callback is not null then '<p><span>' + @callback + @addChar + 'code=' + @code + '</span></p>' else '' endif;    
 
     if @smtpSender is null then
-        call email(@email,'EA Comnfimation Code',@msg);
+        call util.email(@email,'EA Comnfimation Code',@msg);
     else
-        call email(@email,'EA Comnfimation Code',@msg, @smtpSender, @smtpServer);
+        call util.email(@email,'EA Comnfimation Code',@msg, @smtpSender, @smtpServer);
     end if;
     
     return;
