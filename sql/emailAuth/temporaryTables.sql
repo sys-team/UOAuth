@@ -9,7 +9,7 @@ create global temporary table ea.log(
     
     response xml,
 
-    callerIP varchar(16) default connection_property('ClientNodeAddress'),
+    callerIP varchar(255) default connection_property('ClientNodeAddress'),
 
     id ID, xid GUID, ts TS, cts CTS,
     unique (xid), primary key (id)
