@@ -1,5 +1,5 @@
 grant connect to ea;
-grant dba, resourse to ea;
+grant dba to ea;
 
 create table if not exists ea.account (
 	username varchar(50) not null unique,
