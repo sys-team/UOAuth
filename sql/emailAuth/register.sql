@@ -51,6 +51,14 @@ begin
         
         return @response;
     end if;
+        
+    -- delete rotten login
+    delete from ea.account
+     where (username = @login
+        or email = @email)
+       and confirmed = 0
+       and confirmationTs < dateadd(minute, -30, now());
+       
     
     set @msg = (select xmlconcat(
                        if username = @login then xmlelement('error',xmlattributes('LoginInUse' as "code"), 'This name is already in use') else null endif,
@@ -89,14 +97,7 @@ begin
     end if;
     
 
-    
-    -- delete rotten login
-    delete from ea.account
-     where (username = @login
-        or email = @email)
-       and confirmed = 0
-       and confirmationTs < dateadd(minute, -30, now());
-       
+
     
     set @userId = (select id
                      from ea.account
