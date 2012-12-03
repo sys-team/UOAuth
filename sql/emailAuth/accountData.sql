@@ -4,7 +4,7 @@ begin
     declare @result xml;
     
     set @result = ( select xmlelement('account', xmlforest( username, email, id))
-                      from ea.user
+                      from ea.account
                      where id = @accountId);
  
     return @result;

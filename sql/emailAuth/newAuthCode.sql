@@ -5,7 +5,7 @@ begin
     
     set @code = uuidtostr(newid());
     
-    update ea.user
+    update ea.account
        set authCode = @code,
            authCodeTs = now()
      where id = @userId;

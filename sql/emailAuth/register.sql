@@ -56,7 +56,7 @@ begin
                        if username = @login then xmlelement('error',xmlattributes('LoginInUse' as "code"), 'This name is already in use') else null endif,
                        if email = @email then xmlelement('error',xmlattributes('EmailInUse' as "code"),'This email is already in use') else null endif,
                        if confirmed = 1 and password <> hash(@password,'SHA256') then xmlelement('error',xmlattributes('PassMismatch' as "code"),'Password mismatch for confirmed user') else null endif)
-                  from ea.user
+                  from ea.account
                  where (username = @login
                     or email = @email)
                    and (confirmed = 1
@@ -91,7 +91,7 @@ begin
 
     
     -- delete rotten login
-    delete from ea.user
+    delete from ea.account
      where (username = @login
         or email = @email)
        and confirmed = 0
@@ -99,7 +99,7 @@ begin
        
     
     set @userId = (select id
-                     from ea.user
+                     from ea.account
                     where username = @login
                        or email = @email);
     

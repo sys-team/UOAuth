@@ -16,7 +16,7 @@ begin
     select email,
            confirmationCode
       into @email, @code
-      from ea.user where id = @userId;
+      from ea.account where id = @userId;
       
 
     set @msg = '<p><span>Code: </span><span>' + @code + '</span></p>'

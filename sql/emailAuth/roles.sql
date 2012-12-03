@@ -16,7 +16,7 @@ begin
            @code as code;
     
     set @accountId = (select id
-                        from ea.user
+                        from ea.account
                        where confirmed = 1
                          and authCode = @code);
     
