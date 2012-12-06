@@ -1,4 +1,4 @@
-create function ea.uuuid()
+create or replace function ea.uuuid()
 returns long varchar
 begin
     declare @result long varchar;
@@ -8,5 +8,3 @@ begin
     return @result;
 end
 ;
-    
-    
