@@ -13,7 +13,7 @@ begin
            @login as username,
            hash(@password,'SHA256') as password,
            @email as email,
-           newid() as confirmationCode,
+           ea.uuuid() as confirmationCode,
            now() as confirmationTs;
            
     set @result = @@identity;

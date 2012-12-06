@@ -3,7 +3,7 @@ returns long varchar
 begin
     declare @code long varchar;
     
-    set @code = uuidtostr(newid());
+    set @code = ea.uuuid();
     
     update ea.account
        set authCode = @code,

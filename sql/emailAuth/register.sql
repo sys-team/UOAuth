@@ -103,10 +103,12 @@ begin
                      from ea.account
                     where username = @login
                        or email = @email);
+                       
     
     set @userId = ea.registerUser(@userId, @login, @email, @password);
-    
+
     call ea.sendConfirmation(@userId, @callback, @smtpSender, @smtpServer);
+    
     
     set @response = xmlelement('registered');
     
