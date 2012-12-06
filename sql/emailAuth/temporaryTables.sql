@@ -1,4 +1,4 @@
-create global temporary table ea.log(
+create global temporary table if not exists ea.log(
     
     httpBody long varchar,
     service varchar(255),

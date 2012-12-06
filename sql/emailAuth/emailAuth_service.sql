@@ -1,6 +1,6 @@
-drop service emailAuth
+sa_make_object 'service', 'emailauth'
 ;
-create service emailAuth
+alter service emailAuth
 TYPE 'RAW' 
 AUTHORIZATION OFF USER "ea"
 url on
