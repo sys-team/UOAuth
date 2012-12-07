@@ -85,7 +85,7 @@ begin
     -- number or spechial char
     -- lowercase
     -- uppercase
-    if @password not regexp '(?=^.{6,}$)((?=.*\d)|(?=.*\W))(?=.*[a-z])(?=.*[A-Z]).*$' then
+    if ea.passwordCheck(@password) = 0 then
         set @response = xmlelement('error', xmlattributes('InvalidPass' as "code"),
                                   'Password must be at least 6 characters, including an uppercase letter and a special character or number');
         
