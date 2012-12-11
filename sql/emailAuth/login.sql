@@ -30,6 +30,10 @@ begin
         set @response = xmlelement('access_token', ea.newAuthCode(@userId));
     end if;
     
+    update ea.account
+       set lastLogin = now()
+      where id = @userId;
+    
     update ea.log
        set response = @response
      where xid = @xid;

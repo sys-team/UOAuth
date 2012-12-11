@@ -21,7 +21,7 @@ begin
            @pushToken as pushToken,
            @message as msg;
     
-    set @response = upa.pushNotification('http://apns.unact.ru/pushauth-dev', @pushToken, @message);
+    set @response = upa.pushNotification('http://apns.unact.ru/geotracing-dev', @pushToken, @message);
     
     update upa.pushMessageLog
        set response = @response
