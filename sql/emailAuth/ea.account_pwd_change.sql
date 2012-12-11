@@ -9,7 +9,7 @@ begin
                       from ea.account
                      where confirmationCode = @code
                        and confirmationTs > dateadd(mi, -5, now())
-                       and confirmationTs > lastLogin);
+                       and confirmationTs > isnull(lastLogin, today()-1));
                        
     if @account is null then
         raiserror 55555 'InvalidCode';
@@ -22,9 +22,11 @@ begin
     end if;
     
     update ea.account
-       set password = hash(@password,'SHA256')
+       set password = hash(@password,'SHA256'),
+           confirmationCode = null
      where id = @account;
+     
+     --select @account as [account-id];
 
-    select @account as [account-id];
 end
 ;
