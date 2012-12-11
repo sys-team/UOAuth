@@ -34,3 +34,5 @@ begin
 
 end
 ;
+grant execute on ea.account_pwd_change to public
+;
