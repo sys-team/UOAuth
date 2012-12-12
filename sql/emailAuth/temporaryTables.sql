@@ -16,3 +16,16 @@ create global temporary table if not exists ea.log(
     
 )  not transactional share by all
 ;
+
+create global temporary table if not exists ea.code
+
+    requestXid GUID,
+    code varchar(1024) not null,
+    
+    roles xml,    
+    
+    id ID, xid GUID, ts TS, cts CTS,
+    unique (xid), primary key (id)
+    
+)  not transactional share by all
+;   
