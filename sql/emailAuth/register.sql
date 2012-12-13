@@ -36,7 +36,7 @@ begin
         and confirmed = 1;
         
     -- register
-    if @userId is null then
+    if @userId is null and @email <> '' then
            
         if @login not regexp '[[:alnum:].-_]{3,15}' then
             set @response = xmlelement('error', xmlattributes('InvalidLogin' as "code"),
@@ -117,17 +117,28 @@ begin
         set @response = xmlelement('registered');
     else
     
-        if datediff(mi, @confirmationTs, now()) > 5 then
-            update ea.account
-               set confirmationCode = ea.uuuid(),
-                   confirmationTs = now()
-             where id = @userId;
+        if @userId is null then
+            set @response = xmlelement('error', xmlattributes('InvalidLogin' as "code"),
+                                       'Invalid login');
+            
+            update ea.log
+               set response = @response
+             where xid = @xid;
+            
+            return @response;
+        else
+            if datediff(mi, @confirmationTs, now()) > 5 then
+                update ea.account
+                   set confirmationCode = ea.uuuid(),
+                       confirmationTs = now()
+                 where id = @userId;
+                 
+    
+                call ea.sendConfirmation(@userId, @callback, @smtpSender, @smtpServer, @subject);
+             end if;
              
-
-            call ea.sendConfirmation(@userId, @callback, @smtpSender, @smtpServer, @subject);
-         end if;
-         
-         set @response = xmlelement('accepted');
+             set @response = xmlelement('accepted');
+        end if;
     end if;
     
     update ea.log
