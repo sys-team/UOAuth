@@ -1,5 +1,5 @@
 create or replace function ea.confirm(
-    @code long varchar default isnull(replace(http_header('Authorization'), 'Bearer ', ''),http_variable('code')),
+    @code long varchar default replace(http_header('Authorization'), 'Bearer ', ''),
     @password long varchar default http_variable('password'),
     @oldPassword long varchar default  isnull(http_variable('current-password'),'')
 )
@@ -10,6 +10,10 @@ begin
     declare @xid uniqueidentifier;
 
     set @xid = newid();
+    
+    if isnull(@code,'') = '' then
+        set @code = http_variable('code')
+    end if;
     
     insert into ea.log with auto name
     select @xid as xid,
