@@ -17,7 +17,7 @@ create global temporary table if not exists ea.log(
 )  not transactional share by all
 ;
 
-create global temporary table if not exists ea.code
+create global temporary table if not exists ea.code (
 
     requestXid GUID,
     code varchar(1024) not null,
