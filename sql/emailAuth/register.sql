@@ -31,6 +31,7 @@ begin
        from ea.account
       where (username = @login
          or email = @login)
+        and @email = ''
         and confirmed = 1;
         
     -- register
