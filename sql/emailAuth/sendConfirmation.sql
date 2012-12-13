@@ -24,7 +24,7 @@ begin
              + if @callback is not null then '<p><span>' + @callback + @addChar + 'code=' + @code + '</span></p>' else '' endif;    
 
 
-    set @subject = isnull(@subject, 'EA Confimation Code');
+    set @subject = isnull(@subject, @smtpSender + ' confirmation');
     
     if @smtpSender is null then
         call util.email(@email, @subject, @msg);

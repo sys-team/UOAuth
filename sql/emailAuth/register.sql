@@ -4,7 +4,8 @@ create or replace function ea.register(
     @email long varchar default isnull(http_variable('email'),''),
     @callback long varchar default http_variable('callback'),
     @smtpSender long varchar default http_variable('smtp-sender'),
-    @smtpServer long varchar default http_variable('smtp-server')
+    @smtpServer long varchar default http_variable('smtp-server'),
+    @subject long varchar default http_variable('subject')
 )
 returns xml
 begin
@@ -111,7 +112,7 @@ begin
         
         set @userId = ea.registerUser(@userId, @login, @email, @password);
         
-        call ea.sendConfirmation(@userId, @callback, @smtpSender, @smtpServer);
+        call ea.sendConfirmation(@userId, @callback, @smtpSender, @smtpServer, @subject);
     
         set @response = xmlelement('registered');
     else
@@ -123,7 +124,7 @@ begin
              where id = @userId;
              
 
-            call ea.sendConfirmation(@userId, @callback, @smtpSender, @smtpServer);
+            call ea.sendConfirmation(@userId, @callback, @smtpSender, @smtpServer, @subject);
          end if;
          
          set @response = xmlelement('accepted');
