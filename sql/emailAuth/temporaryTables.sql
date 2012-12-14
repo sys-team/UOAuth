@@ -19,10 +19,12 @@ create global temporary table if not exists ea.log(
 
 create global temporary table if not exists ea.code (
 
+    account integer not null,
     requestXid GUID,
     code varchar(1024) not null,
     
-    roles xml,    
+    roles xml,
+    ets datetime,
     
     id ID, xid GUID, ts TS, cts CTS,
     unique (xid), primary key (id)
