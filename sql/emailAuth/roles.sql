@@ -15,10 +15,14 @@ begin
            http_body() as httpBody,
            @code as code;
     
-    set @accountId = (select id
-                        from ea.account
-                       where confirmed = 1
-                         and authCode = @code);
+    set @accountId = coalesce((select id
+                                 from ea.account
+                                where confirmed = 1
+                                  and authCode = @code),
+                              (select account
+                                 from ea.code
+                                where code = @code
+                                  and now() between cts and ets)) ;
     
     if @accountId is null then
         set @response = xmlelement('error', xmlattributes('InvalidAccessToken' as "code"),'Not authorized');

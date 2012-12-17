@@ -14,6 +14,7 @@ begin
     declare @xid GUID;
     declare @msg xml;
     declare @confirmationTs datetime;
+    declare @code long varchar;
     
     set @xid = newid();
     
@@ -110,7 +111,7 @@ begin
                            or email = @email);
                            
         
-        set @userId = ea.registerUser(@userId, @login, @email, @password);
+        set @userId = ea.registerUser(@userId, @login, @email, @password, @xid);
         
         call ea.sendConfirmation(@userId, @callback, @smtpSender, @smtpServer, @subject);
     
@@ -128,11 +129,8 @@ begin
             return @response;
         else
             if datediff(mi, @confirmationTs, now()) > 5 then
-                update ea.account
-                   set confirmationCode = ea.uuuid(),
-                       confirmationTs = now()
-                 where id = @userId;
-                 
+            
+                set @code = ea.newConfirmationCode(@userId, 5, @xid);
     
                 call ea.sendConfirmation(@userId, @callback, @smtpSender, @smtpServer, @subject);
              end if;
