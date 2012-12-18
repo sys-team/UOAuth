@@ -12,6 +12,8 @@ begin
             set @response = ea.confirm();
         when 'roles' then
             set @response = ea.roles();
+        when 'check' then
+            set @response = ea."check"();
     end case;
         
     set @response = xmlelement('response', xmlattributes('https://github.com/sys-team/UOAuth' as "xmlns"), @response);
