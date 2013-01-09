@@ -17,16 +17,22 @@ begin
            http_body() as httpBody,
            @login as "login",
            @password as password;
+           
+    set @userId = ea.checkAccessToken(@password);
     
-    select id,
-           if authCode = @password then 1 else 0 endif
-      into @userId, @isAccessToken
-      from ea.account
-     where (username = @login
-        or email = @login)
-       and (password = hash(@password,'SHA256')
-        or authCode = @password)
-       and confirmed = 1;
+    if @userId is not null then
+        set @isAccessToken = 1;
+    else
+        select id
+          into @userId
+          from ea.account
+         where (username = @login
+            or email = @login)
+           and password = hash(@password,'SHA256')
+           and confirmed = 1;
+           
+        set @isAccessToken = 0;
+    end if;    
                       
     if @userId is null then
         set @response = xmlelement('error', xmlattributes('InvalidLogPass' as "code"), 'Wrong login or password');
