@@ -7,6 +7,7 @@ begin
     declare @response xml;
     declare @userId integer;
     declare @xid uniqueidentifier;
+    declare @isAccessToken integer;
     
     set @xid = newid();
     
@@ -17,17 +18,24 @@ begin
            @login as "login",
            @password as password;
     
-    set @userId = (select id
-                     from ea.account
-                    where (username = @login
-                       or email = @login)
-                      and password = hash(@password,'SHA256')
-                      and confirmed = 1);
+    select id,
+           if authCode = @password then 1 else 0 endif
+      into @userId, @isAccessToken
+      from ea.account
+     where (username = @login
+        or email = @login)
+       and (password = hash(@password,'SHA256')
+        or authCode = @password)
+       and confirmed = 1;
                       
     if @userId is null then
         set @response = xmlelement('error', xmlattributes('InvalidLogPass' as "code"), 'Wrong login or password');
     else
-        set @response = xmlelement('access_token', ea.newAuthCode(@userId));
+        if @isAccessToken = 0 then
+            set @response = xmlelement('access_token', ea.newAuthCode(@userId));
+        else
+            set @response = xmlelement('access_token', @password);
+        end if;
     end if;
     
     update ea.account
