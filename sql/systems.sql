@@ -1,3 +1,4 @@
+/*
 create table if not exists ua.system (
 
     name STRING,
@@ -95,4 +96,4 @@ create table if not exists ua.[designation] (
 
 );
 
-
+*/

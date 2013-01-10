@@ -1,4 +1,6 @@
-create service UOAuth
+sa_make_object 'service', 'UOAuth'
+;
+alter service UOAuth
 type 'raw' 
 authorization off user "dba"
 url on

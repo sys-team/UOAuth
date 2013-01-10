@@ -2,6 +2,18 @@ grant connect to ua;
 grant resource, dba to ua;
 grant group to ua;
 
+grant connect to google;
+grant dba to google;
+
+grant connect to mailru;
+grant dba to mailru;
+
+grant connect to odks;
+grant dba to odks;
+
+grant connect to vk;
+grant dba to vk;
+
 create table ua.client(
 
     name varchar(256) not null,
