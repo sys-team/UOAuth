@@ -299,7 +299,7 @@ begin
                        providerUid,
                        providerError
                   into @refreshToken, @providerResponseXml, @providerUid, @providerError
-                  from ua.authEMailAuth(@eAuthCode);
+                  from ua.authEMailAuth(@eAuthCode, @accessTokenUrl);
                   
             when @eService = 'UPushAuth' then
             
