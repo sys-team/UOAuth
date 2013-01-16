@@ -44,8 +44,8 @@ create table ua.authProvider(
     refreshTokenUrl long varchar,
     accessTokenUrl long varchar,
     
-    clientId varchar(1024) not null unique,
-    clientSecret varchar(1024) not null,
+    clientId varchar(1024),
+    clientSecret varchar(1024),
     clientPublicKey varchar(1024),
 
     id integer default autoincrement,

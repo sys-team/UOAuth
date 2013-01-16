@@ -308,7 +308,7 @@ begin
                        providerUid,
                        providerError
                   into @refreshToken, @providerResponseXml, @providerUid, @providerError
-                  from ua.authUPushAuth(@eAuthCode, @clientCode, @eRedirectUrl);
+                  from ua.authUPushAuth(@eAuthCode, @clientCode, @eRedirectUrl, @accessTokenUrl);
                   
         end case;
         

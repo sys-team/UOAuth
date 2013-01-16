@@ -5,6 +5,9 @@ begin
     declare @response xml;
     declare @xid uniqueidentifier;
     
+    create variable @systemProxyUrl long varchar;
+    set @systemProxyUrl = 'https://system.unact.ru/utils/proxy.php';
+    
     set @request = http_body();
     set @xid = newid();
     
@@ -37,8 +40,7 @@ begin
     -- Пока во всех случаях 404 вернём
     exception  
         when others then 
-            call op.errorHandler('ua.UOAuth',SQLSTATE,errormsg()); 
-            commit;
+            call util.errorHandler('ua.UOAuth',SQLSTATE,errormsg()); 
 
             call dbo.sa_set_http_header('@HttpStatus', '404');
 

@@ -4,14 +4,11 @@ create or replace procedure ua.authEMailAuth(
 )
 begin
     declare @response xml;
-    declare @proxyUrl long varchar;
     declare @providerError long varchar;
     
     declare @userId integer;
     declare @login long varchar;
     declare @email long varchar;
-    
-    set @proxyUrl = 'https://system.unact.ru/utils/proxy.php';
     
     if @accessTokenUrl is null then
         select id,
@@ -24,7 +21,7 @@ begin
            and confirmed = 1;
     else
         -- query roles
-        set @response = ua.systemProxyGet(@proxyUrl+ '?_address=' + @accessTokenUrl + '?access_token=' + @eauthCode);
+        set @response = ua.systemProxyGet(@systemProxyUrl+ '?_address=' + @accessTokenUrl + '&access_token=' + @eauthCode);
         
         select id,
                username,

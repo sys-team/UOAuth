@@ -1,7 +1,8 @@
 create or replace procedure ua.authUPushAuth(
     @eAuthCode long varchar,
     @clientCode long varchar,
-    @eRedirectUrl long varchar
+    @eRedirectUrl long varchar,
+    @accessTokenUrl long varchar
 )
 begin
     declare @xid uniqueidentifier;
@@ -11,6 +12,7 @@ begin
     declare @providerError long varchar;
     declare @accountCode long varchar;
     declare @accountSecret long varchar;
+
     
     select left(@eAuthCode, locate(@eAuthCode,'_')-1),
            substr(@eAuthCode,locate(@eAuthCode,'_')+1)
@@ -18,7 +20,13 @@ begin
 
     --message 'ua.authUPushAuth ',@clientCode,' ', @accountCode,' ', @accountSecret,' ', @eRedirectUrl;
     
-    set @providerResponseXml = xmlelement('response',upa.checkCredentials(@clientCode,'', @accountCode, @accountSecret, @eRedirectUrl));
+    if @accessTokenUrl is null then
+        set @providerResponseXml = xmlelement('response',upa.checkCredentials(@clientCode,'', @accountCode, @accountSecret, @eRedirectUrl));
+    else
+        set @providerResponseXml = ua.systemProxyGet(@systemProxyUrl+ '?_address=' + @accessTokenUrl +
+                                   '&client_id=' + @clientCode + '&account_code=' + @accountCode +
+                                   '&account_secret=' + @accountSecret + '&redirect_uri=' + @eRedirectUrl);
+    end if;
     
     --message 'ua.authUPushAuth @providerResponseXml = ', @providerResponseXml;
     
@@ -32,7 +40,6 @@ begin
            @providerResponseXml as providerResponseXml,
            @providerUid as providerUid,
            @providerError as providerError;
-    
-    
+   
 end
 ;
