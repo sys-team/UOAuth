@@ -16,7 +16,8 @@ begin
     
     set @response = xmlconcat(
         ua.accountRoles(@accountId),
-        ua.accountData (@accountId)
+        ua.accountData (@accountId),
+        ua.tokendata(@accessToken)
     );
     
     return @response;
