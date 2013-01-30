@@ -1,0 +1,14 @@
+{
+    "allowedHosts" : [
+        "accounts.google.com",
+        "accounts.google.ru",
+        "www.facebook.com",
+        "m.facebook.com",
+        "oauth.vk.com",
+        "login.vk.com",
+        "connect.mail.ru",
+        "auth.mail.ru",
+        "win.mail.ru",
+        "www.odnoklassniki.ru"
+    ]
+}
