@@ -110,7 +110,7 @@ begin
     
     if @accountId is null then
         
-        set @code = @providerUid+'@'+@authProviderCode;
+        set @code = isnull(@email, @providerUid+'@'+@authProviderCode);
         set @email = isnull(@email, @code);
     
         insert into ua.account on existing update with auto name
@@ -128,7 +128,8 @@ begin
     set @accountProviderDataId = (select id
                                     from ua.accountProviderData
                                    where account = @accountId
-                                     and authProvider = @authProviderId);
+                                     and authProvider = @authProviderId
+                                     and providerUid = @providerUid);
                                      
     insert into ua.accountProviderData on existing update with auto name
     select @accountProviderDataId as id,
