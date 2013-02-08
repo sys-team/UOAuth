@@ -142,7 +142,8 @@ begin
     set @accountProviderDataId = (select id
                                     from ua.accountProviderData
                                    where account = @accountId
-                                     and authProvider = @authProviderId);
+                                     and authProvider = @authProviderId
+                                     and providerUid = @providerUid);
     
     set @clientId = (select id
                        from ua.client
