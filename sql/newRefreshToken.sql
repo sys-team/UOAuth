@@ -9,7 +9,9 @@ begin
     update ua.accountClientData
        set refreshToken = @token,
            refreshTokenTs = now(),
-           refreshTokenExpiresIn = @expiresIn
+           refreshTokenExpiresIn = @expiresIn,
+           authCode = null,
+           authCodeTs = null
      where id = @accountClientDataId;
 
     select @token as refreshToken, @expiresIn as expiresIn;
