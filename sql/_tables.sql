@@ -37,6 +37,19 @@ create table ua.client(
 comment on table ua.client is 'Клиент (наша программа)'
 ;
 
+create table ua.protocol(
+
+    name varchar(256) not null,
+    code varchar(128) not null unique,
+
+    id ID, xid GUID, ts TS, cts CTS,
+    unique (xid), primary key (id)
+)
+;
+comment on table ua.client is 'Протокол авторизации'
+;
+
+
 create table ua.authProvider(
 
     name varchar(256) not null,
