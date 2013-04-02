@@ -19,6 +19,7 @@ begin
     declare @response xml;
     declare @error long varchar;
     
+    declare @protocol long varchar;
     declare @eService long varchar;
     declare @eAuthCode long varchar;
     declare @eRedirectUrl long varchar;
@@ -91,11 +92,12 @@ begin
         
     set @response = xmlelement('redirect-url', @redirectUrl);
     
-    select refreshTokenUrl,
-           accessTokenUrl
-      into @refreshTokenUrl, @accessTokenUrl
-      from ua.authProvider
-     where code = @eService;
+    select p.refreshTokenUrl,
+           p.accessTokenUrl,
+           p.code
+      into @refreshTokenUrl, @accessTokenUrl, @protocol
+      from ua.authProvider ap join ua.protocol p on ap.protocol = p.id
+     where ap.code = @eService;
 
     begin
         declare http_status_err exception for sqlstate 'WW052';
@@ -109,7 +111,7 @@ begin
            and caprd.client = @clientId;
 
         case 
-            when @eService in ('google','googlei') then
+            when @protocol in ('google','googlei') then
                 
                 -- get access token
                 set @xid = newid();
@@ -185,7 +187,7 @@ begin
                 set @providerResponseXml = ua.json2xml(@providerResponse);
                 set @providerResponseXml = csconvert(@providerResponseXml,'char_charset','utf-8');
                 
-            when @eService = 'facebook' then
+            when @protocol = 'facebook' then
             
                 set @url = @refreshTokenUrl + '&client_id=' + @providerClientId
                                             + '&client_secret=' + @providerClientSecret
@@ -237,7 +239,7 @@ begin
                 set @providerResponseXml = ua.json2xml(@providerResponse);
                 -- message 'fbdata = ', @providerResponseXml;
                 
-            when @eService = 'vk' then
+            when @protocol = 'vk' then
             
                 -- access token
                 set @url = @refreshTokenUrl + '?client_id=' + @providerClientId
@@ -274,7 +276,7 @@ begin
                  
                 --message 'vkdata = ', @providerResponseXml;
                 
-            when @eService = 'mailru' then
+            when @protocol = 'mailru' then
             
                 select refreshToken,
                        providerResponseXml,
@@ -283,7 +285,7 @@ begin
                   into @refreshToken, @providerResponseXml, @providerUid, @providerError
                   from ua.authMailru(@eService, @eAuthCode, @clientCode);
                 
-            when @eService = 'odks' then
+            when @protocol = 'odks' then
             
                 select refreshToken,
                        providerResponseXml,
@@ -292,7 +294,7 @@ begin
                   into @refreshToken, @providerResponseXml, @providerUid, @providerError
                   from ua.authOdks(@eService, @eAuthCode, @clientCode);
                   
-            when @eService = 'emailAuth' then
+            when @protocol = 'emailAuth' then
             
                 select refreshToken,
                        providerResponseXml,
@@ -301,7 +303,7 @@ begin
                   into @refreshToken, @providerResponseXml, @providerUid, @providerError
                   from ua.authEMailAuth(@eAuthCode, @accessTokenUrl);
                   
-            when @eService = 'UPushAuth' then
+            when @protocol = 'UPushAuth' then
             
                 select refreshToken,
                        providerResponseXml,
