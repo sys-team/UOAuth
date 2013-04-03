@@ -75,11 +75,11 @@
             
             $facebookAuthURL = "https://www.facebook.com/dialog/oauth?scope=email&client_id=" . $facebookClientID . "&redirect_uri=" . $facebookRedirectURL;
             
-            $vkAuthURL = "http://oauth.vk.com/authorize?scope=status&response_type=code&client_id=" . $vkClientID . "&redirect_uri=" . $vkRedirectURL;
+            $vkAuthURL = "https://oauth.vk.com/authorize?scope=status&response_type=code&client_id=" . $vkClientID . "&redirect_uri=" . $vkRedirectURL;
             
             $mailruAuthURL = "https://connect.mail.ru/oauth/authorize?response_type=code&client_id=" . $mailruClientID . "&redirect_uri=" . $mailruRedirectURL;
             
-            $odksAuthURL = "http://www.odnoklassniki.ru/oauth/authorize?response_type=code&client_id=" . $odksClientID . "&redirect_uri=" . $odksRedirectURL;
+            $odksAuthURL = "https://www.odnoklassniki.ru/oauth/authorize?response_type=code&client_id=" . $odksClientID . "&redirect_uri=" . $odksRedirectURL;
             
             $authError = $_REQUEST["authError"];
             
