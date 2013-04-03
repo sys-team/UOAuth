@@ -80,9 +80,11 @@
             
             $odksAuthURL = "http://www.odnoklassniki.ru/oauth/authorize?response_type=code&client_id=" . $odksClientID . "&redirect_uri=" . $odksRedirectURL;
             
-            $authError = $_REQUEST["authError"];
+            $authError = false;
+			
+			@$authError = $_REQUEST["authError"];
             
-            if ($authError != ""){
+            if ($authError){
             	echo "<div class='alert alert-error'>
                         <strong>Ошибка!</strong> Не удалось аутентифицировать. (" . htmlspecialchars ($authError) .
                     ")</div>";
