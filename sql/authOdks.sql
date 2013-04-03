@@ -44,7 +44,7 @@ begin
       into @providerClientId, @providerClientSecret, @providerRedirectUrl, @refreshTokenUrl, @accessTokenUrl, @providerClientPublicKey
       from ua.authProvider ap left outer join ua.clientAuthProviderRegData caprd on ap.id = caprd.authProvider
                               join ua.protocol p on p.id = ap.protocol
-     where code = @eService
+     where ap.code = @eService
        and caprd.client = @clientId;
 
     -- refresh & access token
