@@ -41,7 +41,9 @@
         $xml -> loadXML($response);
         
         foreach ($xml -> documentElement -> childNodes as $currentNode)
-            if ($currentNode -> nodeType == XML_ELEMENT_NODE) $ret[$currentNode -> nodeName] = $currentNode -> nodeValue;
+            if ($currentNode -> nodeType == XML_ELEMENT_NODE)
+                $ret[$currentNode -> nodeName] = $currentNode -> nodeValue
+        ;
         
         return $ret;
     }
@@ -66,22 +68,27 @@
             array_push ($urlPathParts, $urlPart)
         ;
         
-        if (count($urlPathParts) < 5) {
-            print 'Wrong URL';
-            return;
-        }
-        
         $service = $urlPathParts[2];
         
         switch ($service) {
             case 'auth':
                 
+                if (count($urlPathParts) < 5) {
+                    print 'Wrong URL';
+                    return;
+                }
+                
                 $parms['e_service'] = $urlPathParts[3];
                 $parms['client_id'] = $urlPathParts[4];
                 $parms['e_code'] = $_REQUEST['code'];
-                break;
+                
+            break;
             
             case 'token':
+                if (isset($_REQUEST['client_id'])) $parms['client_id'] = $_REQUEST['client_id'];
+                if (isset($_REQUEST['code'])) $parms['code'] = $_REQUEST['code'];
+                if (isset($_REQUEST['client_secret'])) $parms['client_secret'] = $_REQUEST['client_secret'];
+                if (isset($_REQUEST['refresh_token'])) $parms['refresh_token'] = $_REQUEST['refresh_token'];
             
         }
     }
@@ -118,7 +125,10 @@
             
         break;
         
-        case 'token':
+        default:
+            
+            header ('Content-type: text/xml', true);
+            echo $asaResponse;
             
         break;
     }
