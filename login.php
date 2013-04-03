@@ -7,6 +7,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="../libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+		<link href="../libs/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
         
         <style>
             .button-image{
@@ -90,8 +91,8 @@
         
         <div class = "container">
             <div class="row">
-                <div class="span4"></div>
-                <div class="span4">	
+                
+                <div class="span4 offset4">	
                     <ul class="thumbnails">
                         <li><p class="lead">Войти&nbsp;с&nbsp;помощью</p></li>
                         <li>
