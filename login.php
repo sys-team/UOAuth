@@ -3,10 +3,9 @@
 <html>
 
     <head>
-        <title>Unact login</title>
+        <title>Demo login</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href='http://fonts.googleapis.com/css?family=Didact+Gothic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
         <link href="../libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         
         <style>
@@ -32,6 +31,13 @@
                 -moz-box-shadow: 0 1px 4px rgba(0, 105, 214, 0.3);
                 box-shadow: 0 1px 4px rgba(0, 105, 214, 0.3);
             }
+			
+			@font-face {
+				font-family: 'Didact Gothic';
+				font-style: normal;
+				font-weight: 400;
+				src: local('Didact Gothic'), local('DidactGothic'), url(didactgothic.woff) format('woff');
+			}
         </style>
         
     </head>
@@ -40,21 +46,13 @@
         
         <?php 
             $u_auth_server_url = "https://system.unact.ru/oauth/handler/auth";
-            $client_id = $_REQUEST["client_id"];
+            $client_id = 'demo.alevin';
             
-            if	($client_id == ""){
-                echo "<div class='alert alert-error'>
-                        <strong>Error!</strong> No client ID provided
-                    </div>";
-                die();
-            }
+            $googleServiceName = "oauth.it.ggl";
+            $googleClientID = "429140241854-nil59gfo0051u8u0a07hg69qf6p8p12e.apps.googleusercontent.com";
             
-            
-            $googleServiceName = "google";
-            $googleClientID = "1043543321098-pp8ltrn0oqnrattumr2ukmc57svpp555.apps.googleusercontent.com";
-            
-            $facebookServiceName = "facebook";
-            $facebookClientID = "280478078728915";
+            $facebookServiceName = "oauth.it.fsb";
+            $facebookClientID = "352968081491423";
             
             $vkServiceName = "vk";
             $vkClientID = "3141555";
@@ -97,31 +95,31 @@
                     <ul class="thumbnails">
                         <li><p class="lead">Войти&nbsp;с&nbsp;помощью</p></li>
                         <li>
-                            <a class="thumbnail" href="<?php echo $googleAuthURL;?>">
+                            <a class="thumbnail btn" href="<?php echo $googleAuthURL;?>">
                                 <img src="img/google-logo.png" class="img-rounded button-image">
                             </a>
                         </li>
                         <li>
-                            <a class="thumbnail" href="<?php echo $facebookAuthURL;?>">
+                            <a class="thumbnail btn" href="<?php echo $facebookAuthURL;?>">
                                 <img src="img/facebook-logo.png" class="img-rounded button-image">
                             </a>
                         </li>
                         <li>
-                            <a class="thumbnail" href="<?php echo $vkAuthURL;?>">
+                            <a class="thumbnail btn disabled" data-disable-href="<?php echo $vkAuthURL;?>">
                                 <img src="img/vk-logo.png" class="img-rounded button-image">
                             </a>
                         </li>
                         <li>
-                            <a class="thumbnail" href="<?php echo $mailruAuthURL;?>">
+                            <a class="thumbnail btn disabled" data-disable-href="<?php echo $mailruAuthURL;?>">
                                 <img src="img/mailru-logo.png" class="img-rounded button-image">
                             </a>
                         </li>
                         <li>
-                            <a class="thumbnail" href="<?php echo $odksAuthURL;?>">
+                            <a class="thumbnail btn disabled" data-disable-href="<?php echo $odksAuthURL;?>">
                                 <img src="img/odks-logo.png" class="img-rounded button-image">
                             </a>
                         </li>
-                        <li><small>ЮНЭКТ Группа компаний</small></li>
+                        <li><small>alevin.ru demo</small></li>
                     </ul>
                 </div>
             </div>
