@@ -15,7 +15,7 @@ begin
     select @xid as xid,
            @url as url,
            @request as request,
-           connection_property('ClientNodeAddress') as clientIp;
+           coalesce(nullif(http_header('clientIp'),''), connection_property('ClientNodeAddress')) as clientIp;
     
     if @url = 'auth' then
         set @response = ua.auth();
