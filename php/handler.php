@@ -54,14 +54,14 @@
     
     $parms = array();
 
-    if (isset($_SERVER[TERM_PROGRAM])) {
+    if (isset($_SERVER['TERM_PROGRAM'])) {
         
         print 'terminal';
         
     } else {
         
         $urlPathParts= array();
-        $u = $_SERVER[SCRIPT_NAME];
+        $u = $_SERVER['SCRIPT_NAME'];
         $u = substr($u, strpos($u,'/handler/'));
         
         foreach (explode('/', $u) as $urlPart) 
