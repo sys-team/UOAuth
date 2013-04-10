@@ -1,7 +1,7 @@
 <?php
 
     
-    define ('UOAUTH_SERVER', 'https://oldcat.unact.ru/iExp/UOAuth/');
+    define ('UOAUTH_SERVER', 'https://uoauth.unact.ru/a/uoauth/');
 
     
     function dumpNice ($array) {
