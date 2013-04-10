@@ -18,6 +18,8 @@
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         
+        $data = false;
+        
         foreach ($postDataArray as $key=>$value)
             $data .= ($data?'&':'').$key .'='. $value
         ;
@@ -52,7 +54,7 @@
     
     $parms = array();
 
-    if ($_SERVER[TERM_PROGRAM]) {
+    if (isset($_SERVER[TERM_PROGRAM])) {
         
         print 'terminal';
         
