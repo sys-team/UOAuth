@@ -8,6 +8,7 @@ begin
        and not exists (select *
                          from ua.accountProviderData
                         where authProvider = apd.authProvider
+                          and providerUid = apd.providerUid 
                           and account = @target);
                           
     delete ua.accountProviderData

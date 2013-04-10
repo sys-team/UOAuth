@@ -14,12 +14,16 @@ begin
     declare @email long varchar;
     declare @name long varchar;
     declare @code long varchar;
+    declare @protocol long varchar;
     
     declare @providerUid long varchar;
     
+    set @protocol = (select p.code
+                       from ua.authProvider ap join ua.protocol p on ap.protocol = p.id
+                      where ap.code = @authProviderCode);
     
     case 
-        when @authProviderCode in ('google','googlei') then
+        when @protocol in ('google','googlei') then
             select email,
                    name,
                    uid
@@ -29,7 +33,7 @@ begin
                        name long varchar '*:name',
                        uid long varchar '*:id');
                                  
-        when @authProviderCode = 'facebook' then
+        when @protocol = 'facebook' then
         
             select top 1
                    name,
@@ -42,7 +46,7 @@ begin
                          username long varchar '*:username',
                          uid long varchar '*:id');
                     
-        when @authProviderCode = 'vk' then
+        when @protocol = 'vk' then
         
             select first_name +' '+ last_name,
                    null,
@@ -53,7 +57,7 @@ begin
                         last_name long varchar '*:last_name',
                         uid long varchar '*:uid')
                    
-        when @authProviderCode = 'mailru' then
+        when @protocol = 'mailru' then
         
             select fname+' '+lname as name,
                    email,
@@ -65,7 +69,7 @@ begin
                         email long varchar '*:email',
                         uid long varchar '*:uid');
                         
-        when @authProviderCode = 'odks' then
+        when @protocol = 'odks' then
         
             select fname +' '+lname,
                    uid
@@ -73,7 +77,7 @@ begin
               from openxml(@providerData, '/*:user')
                    with(fname long varchar '*:first_name', lname long varchar '*:last_name',  uid long varchar '*:uid');
 
-        when @authProviderCode = 'emailAuth' then
+        when @protocol = 'emailAuth' then
         
             select name,
                    email,
@@ -82,7 +86,7 @@ begin
               from openxml(@providerData , '/*:response')
                    with(name  long varchar 'login', email long varchar 'email', uid long varchar 'uid');
                    
-        when @authProviderCode = 'UPushAuth' then
+        when @protocol = 'UPushAuth' then
         
             select type + ' ' + xid,
                    xid
@@ -110,7 +114,7 @@ begin
     
     if @accountId is null then
         
-        set @code = @providerUid+'@'+@authProviderCode;
+        set @code = isnull(@email, @providerUid+'@'+@authProviderCode);
         set @email = isnull(@email, @code);
     
         insert into ua.account on existing update with auto name
@@ -128,7 +132,8 @@ begin
     set @accountProviderDataId = (select id
                                     from ua.accountProviderData
                                    where account = @accountId
-                                     and authProvider = @authProviderId);
+                                     and authProvider = @authProviderId
+                                     and providerUid = @providerUid);
                                      
     insert into ua.accountProviderData on existing update with auto name
     select @accountProviderDataId as id,
@@ -141,7 +146,8 @@ begin
     set @accountProviderDataId = (select id
                                     from ua.accountProviderData
                                    where account = @accountId
-                                     and authProvider = @authProviderId);
+                                     and authProvider = @authProviderId
+                                     and providerUid = @providerUid);
     
     set @clientId = (select id
                        from ua.client

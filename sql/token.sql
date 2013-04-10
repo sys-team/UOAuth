@@ -33,16 +33,23 @@ begin
     set @clientCode = http_variable('client_id');
     set @clientSecret = http_variable('client_secret');
     
+    --message 'ua.token @refreshToken = ',  @refreshToken;
+    --message 'ua.token @authCode = ',  @authCode;
+    --message 'ua.token @clientCode = ',  @clientCode;
+    --message 'ua.token @clientSecret = ',  @clientSecret;
+    
     select c.id,
            acd.id
       into @accountId, @accountClientDataId
       from ua.accountClientData acd join ua.client c on acd.client = c.id
-     where (acd.refreshToken = isnull(@refreshToken,'')
+     where ((acd.refreshToken = isnull(@authCode,'') or acd.refreshToken = isnull(@refreshToken,''))
        and datediff(ss, acd.refreshTokenTs, now()) < acd.refreshTokenExpiresIn
-        or acd.authCode = isnull(@authCode,'')
+        or (acd.authCode = isnull(@authCode,'') or acd.authCode = isnull(@refreshToken,''))
        and datediff(ss, acd.authCodeTs, now()) < acd.authCodeExpiresIn)
        and c.code = @clientCode
        and c.secret = @clientSecret;
+       
+    --message 'ua.token @accountId = ',  @accountId;   
                          
     if @accountId is null or @accountClientDataId is null then
         set @response = xmlelement('error','Not authorized');

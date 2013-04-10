@@ -37,6 +37,22 @@ create table ua.client(
 comment on table ua.client is 'Клиент (наша программа)'
 ;
 
+create table ua.protocol(
+
+    name varchar(256) not null,
+    code varchar(128) not null unique,
+    
+    refreshTokenUrl long varchar,
+    accessTokenUrl long varchar,
+
+    id ID, xid GUID, ts TS, cts CTS,
+    unique (xid), primary key (id)
+)
+;
+comment on table ua.client is 'Протокол авторизации'
+;
+
+
 create table ua.authProvider(
 
     name varchar(256) not null,
@@ -47,6 +63,8 @@ create table ua.authProvider(
     clientId varchar(1024),
     clientSecret varchar(1024),
     clientPublicKey varchar(1024),
+    
+    not null foreign key(protocol) references ua.protocol,
 
     id integer default autoincrement,
     cts datetime default current timestamp,

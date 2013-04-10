@@ -37,11 +37,12 @@ begin
     select ap.clientId,
            ap.clientSecret,
            caprd.redirectUrl,
-           ap.refreshTokenUrl,
-           ap.accessTokenUrl
+           p.refreshTokenUrl,
+           p.accessTokenUrl
       into @providerClientId, @providerClientSecret, @providerRedirectUrl, @refreshTokenUrl, @accessTokenUrl
       from ua.authProvider ap left outer join ua.clientAuthProviderRegData caprd on ap.id = caprd.authProvider
-     where code = @eService
+                              join ua.protocol p on p.id = ap.protocol
+     where ap.code = @eService
        and caprd.client = @clientId;
 
     -- refresh & access token
