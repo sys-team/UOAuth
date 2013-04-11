@@ -326,7 +326,8 @@ begin
         
         set @response =  xmlconcat( if (@needsRefreshToken = '1')
             then xmlelement('auth-code', ua.newAuthCode(@accountClientDataId))
-            else (select xmlelement('access-token', accessToken) from ua.newAccessToken(@accountClientDataId))
+            else (select xmlelement('access-token', xmlattributes(expiresIn as "expire-after"), accessToken)
+                    from ua.newAccessToken(@accountClientDataId))
         endif, @response);
     
         
