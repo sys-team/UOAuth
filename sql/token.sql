@@ -38,7 +38,7 @@ begin
     --message 'ua.token @clientCode = ',  @clientCode;
     --message 'ua.token @clientSecret = ',  @clientSecret;
     
-    select c.id,
+    select acd.account,
            acd.id
       into @accountId, @accountClientDataId
       from ua.accountClientData acd join ua.client c on acd.client = c.id
