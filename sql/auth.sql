@@ -150,7 +150,6 @@ begin
                        @accessTokenUrl+'/tokeninfo?access_token='+@accessToken as url;
                        
                 set @providerResponse =  ua.systemProxyGet(@proxyUrl+ '?_address=' + @accessTokenUrl+'/tokeninfo?access_token='+@accessToken);
-                --set @providerResponse = google.googleapisGet(@accessTokenUrl+'/tokeninfo?access_token='+@accessToken);
                 
                 update ua.googleLog
                    set response = @providerResponse
@@ -177,8 +176,7 @@ begin
                        @accessTokenUrl+'/userinfo?access_token='+@accessToken as url;
                        
                 set @providerResponse = ua.systemProxyGet(@proxyUrl+ '?_address=' + @accessTokenUrl+'/userinfo?access_token='+@accessToken);
-                --set @providerResponse = google.googleapisGet(@accessTokenUrl+'/userinfo?access_token='+@accessToken);
-                
+
                 update ua.googleLog
                    set response = @providerResponse
                  where xid = @xid;
@@ -254,13 +252,21 @@ begin
                        @url as url;
             
                 -- acesss_token
-                set @providerResponse = vk.processAuthCode(@refreshTokenUrl,@eAuthCode, @providerClientId, @providerClientSecret, @providerRedirectUrl);
+                set @providerResponse = vk.processAuthCode(
+                    @proxyUrl + '?_address=' + @refreshTokenUrl,
+                    @eAuthCode,
+                    @providerClientId,
+                    @providerClientSecret,
+                    @providerRedirectUrl
+                );
                                                
                 update ua.vkLog
                    set response = @providerResponse
                  where xid = @xid;
                  
                 set @providerResponseXml = ua.json2xml(@providerResponse);
+                
+                --message 'vkdata #1 = ', @providerResponseXml;
                 
                 select access_token,
                        user_id
@@ -270,11 +276,12 @@ begin
                        
                 -- user data
                 
-                set @url = @accessTokenUrl +'?uids=' + @providerUid+'&access_token='+ @accessToken +'&fields=uid,first_name,last_name,contacts';
+                set @url = @proxyUrl + '?_address=' + @accessTokenUrl +'&uids=' +
+                           @providerUid + '&access_token='+ @accessToken +'&fields=uid,first_name,last_name,contacts';
 
-                set @providerResponseXml = vk.get(@url);
+                set @providerResponseXml =  ua.systemProxyGet(@url);
                  
-                --message 'vkdata = ', @providerResponseXml;
+                --message 'vkdata #2 = ', @providerResponseXml;
                 
             when @protocol = 'mailru' then
             
