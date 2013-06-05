@@ -3,8 +3,9 @@ returns xml
 begin
     declare @result xml;
 
-    set @result = (select xmlelement('token', xmlelement('ts',accessTokenTs)
-                                            , xmlelement('expiresIn', accessTokenExpiresIn))
+    set @result = (select xmlelement('token', xmlelement('ts', accessTokenTs)
+                                            , xmlelement('expiresIn',
+                                                          accessTokenExpiresIn - datediff(ss, accessTokenTs, now())))
                     from ua.accountClientData
                    where accessToken = @accessToken);
                      
