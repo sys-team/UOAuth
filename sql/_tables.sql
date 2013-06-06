@@ -184,9 +184,14 @@ create table ua.accountClientData (
     
 )
 ;
-comment on table ua.account is 'Данные авторизации пользователя для нашего клиента'
+comment on table ua.accountClientData is 'Данные авторизации пользователя для нашего клиента'
 ;
-
+create unique index xk_accountClientData_authCode on ua.accountClientData(authCode)
+;
+create unique index xk_accountClientData_refreshToken on ua.accountClientData(refreshToken)
+;
+create unique index xk_accountClientData_accessToken on ua.accountClientData(accessToken)
+;
 
 create table ua.role(
     

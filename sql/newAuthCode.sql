@@ -3,7 +3,7 @@ returns varchar(256)
 begin
     declare @result varchar(255);
     
-    set @result = uuidtostr(newid());
+    set @result = uuidtostr(util.UDGuid());
     
    update ua.accountClientData
        set authCode = @result,

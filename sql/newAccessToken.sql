@@ -3,7 +3,7 @@ begin
     declare @token varchar(256);
     declare @expiresIn integer;
     
-    set @token = uuidtostr(newid());
+    set @token = uuidtostr(util.UDGuid());
     set @expiresIn = 36000;
     
     update ua.accountClientData
