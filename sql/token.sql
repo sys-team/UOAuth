@@ -12,27 +12,23 @@
 --/*/refresh-token [text()] (в случае access_type = offline)
 --/*/roles[role[text()]] - авторизованные роли
 
-create or replace function ua.token()
+create or replace function ua.token(
+    @refreshToken long varchar default http_variable('refresh_token'),
+    @authCode long varchar default http_variable('code'),
+    @clientCode long varchar default http_variable('client_id'),
+    @clientSecret long varchar default http_variable('client_secret')
+)
 returns xml
 begin
     declare @response xml;
 
-    declare @refreshToken varchar(256);
     declare @refreshTokenExpiresIn integer;
-    declare @authCode varchar(256);
-    declare @clientCode varchar(256);
-    declare @clientSecret varchar(256);
-    
     declare @accountId integer;
     declare @accountClientDataId integer; 
     declare @accessToken varchar(1024);
     declare @accessTokenExpiresIn integer;
     -------
-    set @refreshToken = http_variable('refresh_token');
-    set @authCode = http_variable('code');
-    set @clientCode = http_variable('client_id');
-    set @clientSecret = http_variable('client_secret');
-    
+
     --message 'ua.token @refreshToken = ',  @refreshToken;
     --message 'ua.token @authCode = ',  @authCode;
     --message 'ua.token @clientCode = ',  @clientCode;
