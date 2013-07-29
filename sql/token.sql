@@ -65,7 +65,9 @@ begin
       from ua.newAccessToken(@accountClientDataId);    
 
     set @response = xmlelement('access-token', xmlattributes(@accessTokenExpiresIn as "expire-after"), @accessToken)
-                  + if @refreshTokenExpiresIn is not null then xmlelement('refresh-token', @refreshToken) else '' endif
+                  + if @refreshTokenExpiresIn is not null then
+                    xmlelement('refresh-token', xmlattributes(@refreshTokenExpiresIn as "expire-after"), @refreshToken)
+                  else '' endif
                   + ua.accountRoles(@accountId);
                         
     return @response;
