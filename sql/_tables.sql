@@ -233,3 +233,26 @@ create table ua.accountRole(
 ;
 comment on table ua.role is 'Роль пользователя'
 ;
+
+
+create table ua.accountClientDataAccessToken (
+    
+    not null foreign key (accountClientData) references ua.accountClientData on delete cascade,
+    
+    accessToken varchar(256),
+    accessTokenTs datetime,
+    accessTokenExpiresIn integer,
+    
+    id integer default autoincrement,
+    cts datetime default current timestamp,
+    ts datetime default timestamp,
+    
+    xid uniqueidentifier default newid(),
+    
+    unique (accessToken),
+    unique (xid),
+    primary key (id)    
+
+);
+comment on table ua.role is 'Аксес-токены пользователя'
+;

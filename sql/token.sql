@@ -38,13 +38,16 @@ begin
            acd.id
       into @accountId, @accountClientDataId
       from ua.accountClientData acd join ua.client c on acd.client = c.id
-     where ((acd.refreshToken = isnull(@authCode,'') or acd.refreshToken = isnull(@refreshToken,''))
-       and datediff(ss, acd.refreshTokenTs, now()) < acd.refreshTokenExpiresIn
-        or (acd.authCode = isnull(@authCode,'') or acd.authCode = isnull(@refreshToken,''))
-       and datediff(ss, acd.authCodeTs, now()) < acd.authCodeExpiresIn)
-       and c.code = @clientCode
-       and c.secret = @clientSecret;
-       
+     where (
+            (acd.refreshToken = isnull(@authCode,'') or acd.refreshToken = isnull(@refreshToken,''))
+            and datediff(ss, acd.refreshTokenTs, now()) < acd.refreshTokenExpiresIn
+            or (acd.authCode = isnull(@authCode,'') or acd.authCode = isnull(@refreshToken,''))
+            and datediff(ss, acd.authCodeTs, now()) < acd.authCodeExpiresIn
+        )
+        and c.code = @clientCode
+        and c.secret = @clientSecret
+    ;
+    
     --message 'ua.token @accountId = ',  @accountId;   
                          
     if @accountId is null or @accountClientDataId is null then
