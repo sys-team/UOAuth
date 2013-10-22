@@ -50,7 +50,7 @@
             $client_id = 'st.com';
             
             $googleServiceName = "oauth.it.ggl";
-            $googleClientID = "429140241854-nil59gfo0051u8u0a07hg69qf6p8p12e.apps.googleusercontent.com";
+            $googleClientID = "429140241854-p4gs638ghavpevaajbov3igmtlu8digk.apps.googleusercontent.com";
             
             $facebookServiceName = "oauth.it.fsb";
             $facebookClientID = "352968081491423";
