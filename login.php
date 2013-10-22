@@ -3,7 +3,7 @@
 <html>
 
     <head>
-        <title>Demo login</title>
+        <title>Sistemium login</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="../libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -47,7 +47,7 @@
         
         <?php 
             $u_auth_server_url = "https://system.unact.ru/oauth/handler/auth";
-            $client_id = 'demo.alevin';
+            $client_id = 'st.com';
             
             $googleServiceName = "oauth.it.ggl";
             $googleClientID = "429140241854-nil59gfo0051u8u0a07hg69qf6p8p12e.apps.googleusercontent.com";
