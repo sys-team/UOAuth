@@ -122,7 +122,7 @@
                                 <img src="img/odks-logo.png" class="img-rounded button-image">
                             </a>
                         </li>
-                        <li><small>alevin.ru demo</small></li>
+                        <li><small>sistemium.com authentication</small></li>
                     </ul>
                 </div>
             </div>
