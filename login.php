@@ -108,13 +108,13 @@
                             </a>
                         </li>
                         <li>
-                            <a class="thumbnail btn disabled" data-disable-href="<?php echo $vkAuthURL;?>">
-                                <img src="img/vk-logo.png" class="img-rounded button-image">
+                            <a class="thumbnail btn" href="<?php echo $mailruAuthURL;?>">
+                                <img src="img/mailru-logo.png" class="img-rounded button-image">
                             </a>
                         </li>
                         <li>
-                            <a class="thumbnail btn disabled" data-disable-href="<?php echo $mailruAuthURL;?>">
-                                <img src="img/mailru-logo.png" class="img-rounded button-image">
+                            <a class="thumbnail btn disabled" data-disable-href="<?php echo $vkAuthURL;?>">
+                                <img src="img/vk-logo.png" class="img-rounded button-image">
                             </a>
                         </li>
                         <li>
