@@ -67,7 +67,7 @@
             $googleRedirectURL = $u_auth_server_url . "/". $googleServiceName ."/" . $client_id;
             $facebookRedirectURL = $u_auth_server_url . "/". $facebookServiceName ."/" . $client_id;
             $vkRedirectURL = $u_auth_server_url . "/". $vkServiceName ."/" . $client_id;
-            $mailruRedirectURL = $u_auth_server_url . "/". $mailruServiceName ."/" . $client_id;
+            $mailruRedirectURL = "https://sistemium.com/oauth/handler/auth" . "/". $mailruServiceName ."/" . $client_id;
             $odksRedirectURL = $u_auth_server_url . "/". $odksServiceName ."/" . $client_id;
             
             $googleAuthURL = "https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/userinfo.email+https://www.googleapis.com/auth/userinfo.profile&response_type=code&client_id=" . $googleClientID . "&redirect_uri=" . $googleRedirectURL;
