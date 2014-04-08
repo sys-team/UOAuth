@@ -58,8 +58,8 @@
             $vkServiceName = "vk";
             $vkClientID = "3141555";
             
-            $mailruServiceName = "mailru";
-            $mailruClientID = "689363";
+            $mailruServiceName = "oauth.it.mru";
+            $mailruClientID = "719429";
             
             $odksServiceName = "odks";
             $odksClientID = "93366272";
