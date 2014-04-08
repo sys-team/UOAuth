@@ -61,17 +61,17 @@
             $mailruServiceName = "oauth.it.mru";
             $mailruClientID = "719429";
             
-            $odksServiceName = "odks";
-            $odksClientID = "93366272";
-
+            $odksServiceName = "oauth.it.odk";
+            $odksClientID = "1085644288";
+			
             $googleRedirectURL = $u_auth_server_url . "/". $googleServiceName ."/" . $client_id;
             $facebookRedirectURL = $u_auth_server_url . "/". $facebookServiceName ."/" . $client_id;
-            $odksRedirectURL = $u_auth_server_url . "/". $odksServiceName ."/" . $client_id;
 			
 			$u_auth_server_url = "https://sistemium.com/oauth/handler/auth";
 			
             $mailruRedirectURL = $u_auth_server_url . "/". $mailruServiceName ."/" . $client_id;
             $vkRedirectURL = $u_auth_server_url . "/". $vkServiceName ."/" . $client_id;
+            $odksRedirectURL = $u_auth_server_url . "/". $odksServiceName ."/" . $client_id;
             
             $googleAuthURL = "https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/userinfo.email+https://www.googleapis.com/auth/userinfo.profile&response_type=code&client_id=" . $googleClientID . "&redirect_uri=" . $googleRedirectURL;
             
@@ -121,7 +121,7 @@
                             </a>
                         </li>
                         <li>
-                            <a class="thumbnail btn disabled" data-disable-href="<?php echo $odksAuthURL;?>">
+                            <a class="thumbnail btn" href="<?php echo $odksAuthURL;?>">
                                 <img src="img/odks-logo.png" class="img-rounded button-image">
                             </a>
                         </li>
