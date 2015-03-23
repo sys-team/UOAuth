@@ -12,20 +12,20 @@ begin
     declare @providerResponseXml long varchar;
     declare @providerUid long varchar;
     declare @providerError long varchar;
-    
+
     declare @providerClientId long varchar;
     declare @providerClientSecret long varchar;
     declare @providerRedirectUrl long varchar;
     declare @refreshTokenUrl long varchar;
     declare @accessTokenUrl long varchar;
-    
+
     declare @clientId long varchar;
     declare @redirectUrl long varchar;
-    
+
     declare @tmp long varchar;
     declare @proxyUrl long varchar;
-    
-    set @proxyUrl = 'https://system.unact.ru/utils/proxy.php';
+
+    set @proxyUrl = util.getUserOption('http.proxy.url');
     --set @proxyUrl = 'http://lamac.unact.ru/~sasha/UDUtils/proxy.php';
 
     select id,
@@ -47,20 +47,20 @@ begin
 
     -- refresh & access token
     set @xid = newid();
-    
+
     set @tmp =  'client_id=' + @providerClientId
            + '&client_secret=' + @providerClientSecret
            + '&grant_type=authorization_code'
            + '&code=' + @eAuthCode
            + '&redirect_uri=' + @providerRedirectUrl ;
-           
+
     -- message '@tmp = ', @tmp;
-    
+
     insert into ua.mailruLog with auto name
     select @xid as xid,
            @refreshTokenUrl as url,
            @tmp as request;
-           
+
     set @providerResponse =  mailru.processAuthCode(@proxyUrl,
                                                     @refreshTokenUrl,
                                                     @providerClientId,
@@ -68,15 +68,15 @@ begin
                                                     'authorization_code',
                                                     @eAuthCode,
                                                     @providerRedirectUrl);
-                                                    
-                                                    
+
+
     update ua.mailruLog
        set response = @providerResponse
      where xid = @xid;
-     
+
     set @providerResponseXml = ua.json2xml(@providerResponse);
     -- message 'mailru reponse = ', @providerResponseXml;
-    
+
     select refreshToken,
            accessToken,
            uid,
@@ -87,11 +87,11 @@ begin
                  accessToken long varchar '*:access_token',
                  uid long varchar '*:x_mailru_vid',
                  error long varchar '*:error');
-                 
+
     if @providerError is null then
-    
+
         set @xid = newid();
-        
+
         set @tmp = @proxyUrl+ '?_address=' +  @accessTokenUrl +'&'
                             + 'method=users.getInfo&app_id=' +  @providerClientId + '&'
                             + 'session_key=' + @accessToken +'&'
@@ -102,17 +102,17 @@ begin
                                                    'users.getInfo',
                                                    '1',
                                                     @accessToken );
-        
+
         insert into ua.mailruLog with auto name
         select @xid as xid,
                @tmp as url;
-        
+
         set @providerResponseXml = ua.systemProxyGet(@tmp);
-        
+
         update ua.mailruLog
            set response = @providerResponseXml
          where xid = @xid;
-        
+
         if @providerResponseXml like '{"error":%' then
             set @providerError = 'Unknown error';
         else
@@ -122,7 +122,7 @@ begin
                    with(error long varchar '*:error_msg');
 
         end if;
-    
+
         -- message 'mailru reponse = ', @providerResponseXml;
     end if;
 
@@ -130,6 +130,6 @@ begin
            @providerResponseXml as providerResponseXml,
            @providerUid as providerUid,
            @providerError as providerError;
-           
+
 end
 ;
