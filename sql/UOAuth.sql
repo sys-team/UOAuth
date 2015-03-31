@@ -6,8 +6,8 @@ begin
     declare @xid uniqueidentifier;
     
     create variable @systemProxyUrl long varchar;
-    set @systemProxyUrl = 'https://system.unact.ru/utils/proxy.php';
-    
+    set @systemProxyUrl = util.getUserOption('http.proxy.url');
+
     set @request = http_body();
     set @xid = newid();
     
