@@ -104,9 +104,9 @@
             if ($asaResponseArray['redirect-url'] != ''){
                 $redirectUrl = $asaResponseArray['redirect-url']
                     . (strpos($asaResponseArray['redirect-url'],'?')==false ? '?' : '&')
-                    . ($asaResponseArray['auth-code']
+                    . (isset($asaResponseArray['auth-code'])
                         ?'code='.$asaResponseArray['auth-code']
-                        : ($asaResponseArray['access-token']
+                        : (isset($asaResponseArray['access-token'])
                             ?'access_token='.$asaResponseArray['access-token']
                             :'error='.$asaResponseArray['error']
                         )
