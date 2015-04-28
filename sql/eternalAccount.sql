@@ -60,9 +60,9 @@ begin
     insert into ua.accountClientData with auto name
     select id as client,
         @account as account,
-        newid() as refreshToken,
-        now() as refreshTokenTs,
-        @lifetime as refreshTokenExpiresIn
+        newid() as accessToken,
+        now() as accessTokenTs,
+        @lifetime as accessTokenExpiresIn
     from ua.client c
     where c.code = @clientCode;
 
