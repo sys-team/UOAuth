@@ -8,6 +8,7 @@ create or replace procedure ua.eternalAccount(
 )
 begin
     declare @account integer;
+    declare @token string;
 
     declare local temporary table #roles (
         code string,
@@ -57,14 +58,19 @@ begin
         rr.data
     from ua.role r join #roles rr on r.code = rr.code;
 
+    set @token = uuidtostr(util.UDGuid());
+
     insert into ua.accountClientData with auto name
     select id as client,
         @account as account,
-        newid() as accessToken,
+        @token as accessToken,
         now() as accessTokenTs,
         @lifetime as accessTokenExpiresIn
     from ua.client c
     where c.code = @clientCode;
+
+
+    select @token as accessToken;
 
 end
 ;
