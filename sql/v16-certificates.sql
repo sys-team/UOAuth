@@ -83,21 +83,6 @@ LPAvTK33sefOT6jEm0pUBsV/fdUID+Ic/n4XuKxe9tQWskMJDE32p2u0mYRlynqI
 -----END CERTIFICATE-----'
 ;
 
-create or replace function ua.systemProxyGet(
-    url long varchar
-) returns long varchar
-url '!url'
-type 'HTTP:POST'
-certificate 'cert_name=*.sistemium.com'
-;
-
-create or replace function ua.json2xml(@request long nvarchar)
-returns long nvarchar
-url 'https://api.sistemium.com/api/json2xml'
-type 'HTTP:POST:text/json'
-header 'Content-type:text/json'
-certificate 'cert_name=*.sistemium.com'
-;
 
 
 create or replace function mailru.processAuthCode(
